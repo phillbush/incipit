@@ -58,7 +58,7 @@ function gettok(    a, n) {
 				toktype = FIGUREMARK
 				tok = line
 				line = ""
-			} else if (line ~ /^┌.*┐$/) {
+			} else if (line ~ /^[ \t]*┌.*┐[ \t]*$/) {
 				toktype = TABLEMARK
 				tok = line
 				line = ""
@@ -363,8 +363,6 @@ function figure() {
 
 # parse enumeration
 function enumeration(    lvl, enumlvl, label, colon) {
-	# TODO: we are not using the markup[] array here, but we should
-	# TODO: add support for enumeration in html
 	while (!eof && (toktype == NONE || toktype == ENUMMARK)) {
 		if (toktype == ENUMMARK) {
 			label = ""
@@ -443,13 +441,13 @@ function table(    div, sep, tbl, ncol, nrow) {
 		tok = substr(tok, RSTART + RLENGTH)
 	}
 	while ((ret = (getline)) == 1) {
-		if ($0 ~ /^└.*┘/)
+		if ($0 ~ /^[ \t]*└.*┘[ \t]*/)
 			break
-		if ($0 ~ /^├/) {
+		if ($0 ~ /^[ \t]*├/) {
 			div = 1
 			nrow++
 			continue
-		} if ($0 ~ /^╞/) {
+		} if ($0 ~ /^[ \t]*╞/) {
 			nrow++
 			div = 1
 			sep = 1

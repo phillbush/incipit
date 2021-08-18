@@ -170,7 +170,7 @@ presented below.
 }
 
 .PIC Diagrams.
-When converting to ms, diagrams can be written on the PIC language.
+When converting to ms, diagrams can be written in the PIC language.
 Diagrams are marked with the ⟨PIC:⟩ keyword before the opening curly
 bracket.  The only punctuation that are processed inside a PIC figure
 are emphasis and topic (topic is converted to a emphasis between ASCII
