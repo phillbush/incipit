@@ -58,6 +58,18 @@ function gettok(    a, n) {
 				toktype = FIGUREMARK
 				tok = line
 				line = ""
+			} else if (line ~ /^┌.*┐$/) {
+				toktype = TABLEMARK
+				tok = line
+				line = ""
+			} else if (line ~ /^[ \t]*“[ \t]*$/) {
+				toktype = QUOTEBEG
+				tok = line
+				line = ""
+			} else if (line ~ /^[ \t]*”[ \t]*$/) {
+				toktype = QUOTEEND
+				tok = line
+				line = ""
 			} else {
 				toktype = NONE
 				tok = line
@@ -338,7 +350,7 @@ function pic(    ret) {
 }
 
 # parse figure
-function figure(    ret, fig, caption) {
+function figure() {
 	line = ""
 	if (tok ~ /^IMAGE:[ \t]+/) {
 		image()
@@ -422,6 +434,91 @@ function section(    lvl) {
 	printf markup[type, "SECTION", "END"], lvl
 }
 
+# parse table
+function table(    div, sep, tbl, ncol, nrow) {
+	div = sep = 0
+	col = ncol = nrow = 1
+	while (match(tok, "┬")) {
+		ncol++
+		tok = substr(tok, RSTART + RLENGTH)
+	}
+	while ((ret = (getline)) == 1) {
+		if ($0 ~ /^└.*┘/)
+			break
+		if ($0 ~ /^├/) {
+			div = 1
+			nrow++
+			continue
+		} if ($0 ~ /^╞/) {
+			nrow++
+			div = 1
+			sep = 1
+			continue
+		}
+		col = 1
+		for (i = 2; i < NF; i++) {
+			if ($i == "│") {
+				col++
+			} else {
+				tbl[nrow, col] = tbl[nrow, col] (tbl[nrow, col] != "" ? " " : "") $i
+			}
+		}
+		if (div && !sep) {
+			nrow++
+		}
+	}
+	if (div && !sep) {
+		nrow--
+	}
+	if (ret != 1) {
+		eof = 1
+	}
+	printf markup[type, "TABLE", "BEG"], (div && !sep ? "box" : "allbox")
+	if (troff) {
+		for (i = 1; i <= nrow; i++) {
+			for (j = 1; j <= ncol; j++) {
+				printf "%s%s", (j == 1 ? "" : " "), (i == 1 ? "c" : "l")
+			}
+			printf "%s\n", (i == nrow ? "." : "")
+		}
+	}
+	for (i = 1; i <= nrow; i++) {
+		printf "%s", markup[type, "ROW", "BEG"]
+		for (j = 1; j <= ncol; j++) {
+			printf "%s", markup[type, (i == 1 ? "TH" : "COL") (j == 1 ? "1" : "N"), "BEG"]
+			printf "%s", tbl[i, j]
+			printf "%s", markup[type, (i == 1 ? "TH" : "COL") (j == 1 ? "1" : "N"), "END"]
+		}
+		printf "%s", markup[type, "ROW", "END"]
+	}
+	printf "%s", markup[type, "TABLE", "END"]
+}
+
+# parse blockquote
+function quote() {
+	printf "%s", markup[type, "QUOTE", "BEG"]
+	while (gettok() > 0) {
+		if (toktype == QUOTEEND) {
+			break
+		} else if (toktype == SECTIONMARK) {
+			section()
+		} else if (toktype == ENUMMARK) {
+			enumeration()
+		} else if (toktype == FIGUREMARK) {
+			figure()
+		} else if (toktype == TABLEMARK) {
+			table()
+		} else if (toktype == QUOTEBEG) {
+			quote()
+		} else if (toktype == NONE && NR == 1) {
+			docincipit()
+		} else if (toktype == NONE) {
+			paragraph()
+		}
+	}
+	printf "%s", markup[type, "QUOTE", "END"]
+}
+
 # parse the entire document
 function document() {
 	printf "%s", markup[type, "HEADER"]
@@ -432,6 +529,10 @@ function document() {
 			enumeration()
 		} else if (toktype == FIGUREMARK) {
 			figure()
+		} else if (toktype == TABLEMARK) {
+			table()
+		} else if (toktype == QUOTEBEG) {
+			quote()
 		} else if (toktype == NONE && NR == 1) {
 			docincipit()
 		} else if (toktype == NONE) {
@@ -460,6 +561,9 @@ BEGIN {
 	SECTIONMARK = 2
 	ENUMMARK = 3
 	FIGUREMARK = 4
+	TABLEMARK = 5
+	QUOTEBEG = 6
+	QUOTEEND = 7
 
 	# ms markup
 	markup["ms", "HEADER"] = ".de VS\n.DS\n.nf\n.ft CW\n..\n.de VE\n.ft P\n.fi\n.DE\n..\n"
@@ -504,6 +608,20 @@ BEGIN {
 	markup["ms", "IMAGE", "MID"] = ".BP \"%s\" \"\" \"\" \"c\" \"\" \"\" \"%s\"\n"
 	markup["ms", "IMAGE", "END"] = ""
 	markup["ms", "CAPTION", "MID"] = ""
+	markup["ms", "TABLE", "BEG"] = ".TS\ncenter, %s;\n"
+	markup["ms", "TABLE", "END"] = ".TE\n"
+	markup["ms", "TH1", "BEG"] = ""
+	markup["ms", "TH1", "END"] = ""
+	markup["ms", "THN", "BEG"] = "\t"
+	markup["ms", "THN", "END"] = ""
+	markup["ms", "COL1", "BEG"] = ""
+	markup["ms", "COL1", "END"] = ""
+	markup["ms", "COLN", "BEG"] = "\t"
+	markup["ms", "COLN", "END"] = ""
+	markup["ms", "ROW", "BEG"] = ""
+	markup["ms", "ROW", "END"] = "\n"
+	markup["ms", "QUOTE", "BEG"] = ".QS\n"
+	markup["ms", "QUOTE", "END"] = ".QE\n"
 
 	# html markup
 	markup["html", "HEADER"] = ""
@@ -524,7 +642,7 @@ BEGIN {
 	markup["html", "PARAGRAPH", "END"] = "</p>\n"
 	markup["html", "PARATITLE", "BEG"] = "<strong>"
 	markup["html", "PARATITLE", "END"] = "</strong>"
-	markup["html", "SECTION", "BEG"] = "<h%d id=\"%s\" alt=\"%s\">"
+	markup["html", "SECTION", "BEG"] = "<h%d id=\"%s\">"
 	markup["html", "SECTION", "END"] = "</h%d>\n"
 	markup["html", "CODE", "BEG"] = "<figure><pre><code>"
 	markup["html", "CODE", "END"] = "</figure></pre></code>\n"
@@ -543,9 +661,23 @@ BEGIN {
 	markup["html", "ITEM", "BEG"] = "<li>"
 	markup["html", "ITEM", "END"] = "</li>\n"
 	markup["html", "IMAGE", "BEG"] = "<figure>"
-	markup["html", "IMAGE", "MID"] = "<img src=\"%s\">"
+	markup["html", "IMAGE", "MID"] = "<img src=\"%s\" alt=\"%s\">"
 	markup["html", "IMAGE", "END"] = "</figure>\n"
 	markup["html", "CAPTION", "MID"] = "<figcaption>%s</figcaption>\n"
+	markup["html", "TABLE", "BEG"] = "<table>"
+	markup["html", "TABLE", "END"] = "</table>\n"
+	markup["html", "TH1", "BEG"] = "<th>"
+	markup["html", "TH1", "END"] = "</th>\n"
+	markup["html", "THN", "BEG"] = "<th>"
+	markup["html", "THN", "END"] = "</th\n>"
+	markup["html", "COL1", "BEG"] = "<td>"
+	markup["html", "COL1", "END"] = "</td>\n"
+	markup["html", "COLN", "BEG"] = "<td>"
+	markup["html", "COLN", "END"] = "</td>\n"
+	markup["html", "ROW", "BEG"] = "<tr>"
+	markup["html", "ROW", "END"] = "</tr>\n"
+	markup["html", "QUOTE", "BEG"] = "<blockquote>"
+	markup["html", "QUOTE", "END"] = "</blockquote>\n"
 
 	document()
 }

@@ -155,7 +155,7 @@ bracket must be the first character in a line.  The content of a figure
 is usually idented with a tab, so the first tab of each code line is
 removed in the final document.
 
-.Code Listing.
+.Code Listings.
 The simplest figure is a code listing, an example of which,
 copied from the second edition of “The C Programming Language” book, is
 presented below.
@@ -169,7 +169,7 @@ presented below.
 	}
 }
 
-.PIC Diagram.
+.PIC Diagrams.
 When converting to ms, diagrams can be written on the PIC language.
 Diagrams are marked with the ⟨PIC:⟩ keyword before the opening curly
 bracket.  The only punctuation that are processed inside a PIC figure
@@ -205,7 +205,7 @@ PIC: {
 	arrow from bottom of CC to top of ELF
 }
 
-.Image.
+.Images.
 Images can be inserted on a document by preceding the opening bracket
 with the ⟨IMAGE:⟩ keyword, optionally followed by a caption.  Note that
 only `.eps` images are supported when converting to troff.  When
@@ -217,11 +217,75 @@ IMAGE: A monkey riding a parrot. {
 }
 
 .Tables.
-Tables are not supported yet.
+Tables are special figures in the sense that they are not written
+between curly brackets.  Tables must be written using box drawing
+Unicode characters.  Columns must be separated by a vertical light
+box drawing character.  The first row separator must contain double
+box drawing characters, and the following ones must be separated by
+light double box drawing characters.  The following is an example of
+table.
+
+┌─────────┬──────┬────────────┬───────────────┐
+│ COUNTRY │ AREA │ POPULATION │ CONTINENT     │
+╞═════════╪══════╪════════════╪═══════════════╡
+│ USSR    │ 8649 │ 275        │ Asia          │
+├─────────┼──────┼────────────┼───────────────┤
+│ Canada  │ 3852 │ 25         │ North America │
+├─────────┼──────┼────────────┼───────────────┤
+│ China   │ 3705 │ 1032       │ Asia          │
+├─────────┼──────┼────────────┼───────────────┤
+│ USA     │ 3615 │ 237        │ North America │
+├─────────┼──────┼────────────┼───────────────┤
+│ Brazil  │ 3286 │ 134        │ South America │
+├─────────┼──────┼────────────┼───────────────┤
+│ India   │ 1267 │ 746        │ Asia          │
+├─────────┼──────┼────────────┼───────────────┤
+│ Mexico  │ 762  │ 78         │ North America │
+├─────────┼──────┼────────────┼───────────────┤
+│ France  │ 211  │ 55         │ Europe        │
+├─────────┼──────┼────────────┼───────────────┤
+│ Japan   │ 144  │ 120        │ Asia          │
+├─────────┼──────┼────────────┼───────────────┤
+│ Germany │ 96   │ 61         │ Europe        │
+├─────────┼──────┼────────────┼───────────────┤
+│ England │ 94   │ 56         │ Europe        │
+└─────────┴──────┴────────────┴───────────────┘
+
+.Tables (alternative form).
+‘Incipit’ supports an alternative format for tables, in which the first
+row separator contains light box drawing characters, and the following
+rows are not separated by any character but a new line.  An example of
+such table is presented below.
+
+┌─────────┬──────┬────────────┬───────────────┐
+│ COUNTRY │ AREA │ POPULATION │ CONTINENT     │
+├─────────┼──────┼────────────┼───────────────┤
+│ USSR    │ 8649 │ 275        │ Asia          │
+│ Canada  │ 3852 │ 25         │ North America │
+│ China   │ 3705 │ 1032       │ Asia          │
+│ USA     │ 3615 │ 237        │ North America │
+│ Brazil  │ 3286 │ 134        │ South America │
+│ India   │ 1267 │ 746        │ Asia          │
+│ Mexico  │ 762  │ 78         │ North America │
+│ France  │ 211  │ 55         │ Europe        │
+│ Japan   │ 144  │ 120        │ Asia          │
+│ Germany │ 96   │ 61         │ Europe        │
+│ England │ 94   │ 56         │ Europe        │
+└─────────┴──────┴────────────┴───────────────┘
 
 .Quotation.
-Quotations are not supported yet.
+Quotations are special figures which, instead of curly braces, are
+written between double quotes.
 
+“
+	I'd just like to interject for a moment.  What you're referring
+	to as Linux, is in fact, GNU/Linux, or as I've recently taken to
+	calling it, GNU plus Linux.  Linux is not an operating system
+	unto itself, but rather another free component of a fully
+	functioning GNU system made useful by the GNU corelibs, shell
+	utilities and vital system components comprising a full OS as
+	defined by POSIX.
+”
 
 § Converter
 
