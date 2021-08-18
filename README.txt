@@ -21,25 +21,30 @@ semi-colon.
 
 Incipit uses Unicode characters (called “punctuation” in this document),
 alongside the structure of the text, to format documents.  For example,
-the section character (`§`, U+00A7) is used to markup section headers.
-The bullet character (`•`, U+2022) is used to markup bulleted lists.
+the section character (⟨§⟩, U+00A7) is used to markup section headers.
+The bullet character (⟨•⟩, U+2022) is used to markup bulleted lists.
 
 Punctuations are mostly used within a paragraph.  Those punctuations
 (called inline punctuation) markup emphases, references, topics or
 preformated text.  Punctuations cannot be nested: a portion of text
 is either emphasized, or it is preformated, never both.  The types of
 inline punctuations are enumerated below.
-• Emphasis: Text ‘between single quotes’ is emphasized.  It is formated
-            in italic font and the punctuation is removed in the final
-            document.
-• Topic: Text “between double quotes” is topicalized.  It is formated
-         in italic font and the punctuation is kept in the final
-         document.
-• Reference: Text «between double angle quotes» is reference.  More on
-             that in a paragraph below.
+• Emphasis: Text ‘between single quotes’ is emphasized.  The single
+            quotes must be Unicode characters ⟨‘⟩ (U+2018) and ⟨’⟩
+            (U+2019).  Emphatic text is formated in italic font and
+            the punctuation is removed in the final document.
+• Topic: Text “between double quotes” is topicalized.  The double quotes
+         must be Unicode characters ⟨“⟩ (U+201C) and ⟨”⟩ (U+201D).
+         Topical text is formated in italic font and the punctuation is
+         preserved in the final document.
+• Reference: Text «between double angle quotes» is reference.  The angle
+             quotes must be Unicode characters ⟨«⟩ (U+00AB) and ⟨»⟩
+             (U+00BB).  More on reference text in a paragraph below.
 • Preformated: Text `between grave accents` or {between curly braces}
-               is preformated.  It is formated in monospaced font and
-               the punctuation is removed in the final document.
+               is preformated.  Those punctuation are regular ASCII
+               punctuation.  Preformated text is formated in monospaced
+               font and the punctuation is removed in the final
+               document.
 • Meta text: Text ⟨between angle braces⟩ is meta text.  It is formated
              in monospaced font and the punctuation is kept in the final
              document.
@@ -145,41 +150,115 @@ incipit colons.
 
 Figures are text delimited between curly brackets.  The opening curly
 bracket must be the last character in a line and the closing curly
-bracket must be the first character in a line.
+bracket must be the first character in a line.  The content of a figure
+is usually idented with a tab, so the first tab of each code line is
+removed in the final document.
 
-The most simple example of figure is code listing, an example of which,
+.Code Listing.
+The simplest figure is a code listing, an example of which,
 copied from the second edition of “The C Programming Language” book, is
-presented below.  Code is usually idented with a tab, so the first tab
-of each code line is removed in the final document.
+presented below.
 
 {
 	#include <stdio.h>
 
 	main()
 	{
-		printf("hello, world\n";
+		printf("hello, world\n");
 	}
 }
 
+.Image.
+An image can be included in a figure by preceding the opening bracket
+with the ⟨IMAGE:⟩ keyword, optionally followed by the image caption,
+before the opening curly bracket.  Note that only `.eps` images are
+supported when converting to troff.  When converting to html, however,
+common formats such as `.jpg` and `.png` are supported.
 
-§§ Images
+IMAGE: A monkey riding a parrot. {
+	figure.eps
+}
 
-TODO.
+.PIC Diagram.
+When converting to ms, diagrams can be written on the PIC language.
+Diagrams are marked with the ⟨PIC:⟩ keyword before the opening curly
+bracket.  The only punctuation that are processed inside a PIC figure
+are emphasis and topic (topic is converted to a emphasis between ASCII
+double quotes).
+
+PIC: {
+	define filter {box ht 0.25 rad 0.125}
+	lineht = 0.25;
+	Top: [
+		right;
+		box “ms” "sources";
+		move;
+		box “HTML” "sources";
+		move;
+		box “linuxdoc-sgml” "sources" wid 1.5;
+		move;
+		box “Texinfo” "sources";
+
+		line down from 1st box .s lineht;
+		A: line down;
+		line down from 2nd box .s; filter “html2ms”;
+		B: line down;
+		line down from 3rd box .s; filter “format”;
+		C: line down;
+		line down from 4th box .s; filter “texi2roff”;
+		D: line down;
+	]
+	move down 1 from last [] .s;
+	Anchor: box wid 1 ht 0.75 “ms” "intermediate" "form";
+	arrow from Top.A.end to Anchor.nw;
+	arrow from Top.B.end to 1/3 of the way between Anchor.nw and Anchor.ne;
+	arrow from Top.C.end to 2/3 of the way between Anchor.nw and Anchor.ne;
+	arrow from Top.D.end to Anchor.ne
+	{
+		# PostScript column
+		move to Anchor .sw;
+		line down left then down ->;
+		filter “pic”;
+		arrow;
+		filter “eqn”;
+		arrow;
+		filter “tbl”;
+		arrow;
+		filter “groff”;
+		arrow;
+		box "PostScript";
+
+		# HTML column
+		move to Anchor .se;
+		line down right then down ->;
+		A: filter dotted “pic2img”;
+		arrow;
+		B: filter dotted “eqn2html”;
+		arrow;
+		C: filter dotted “tbl2html”;
+		arrow;
+		filter “ms2html”;
+		arrow;
+		box "HTML";
+
+		# Nonexistence caption
+		box dashed wid 1 at B + (2, 0) "These tools" "don’t yet exist";
+		line chop 0 chop 0.1 dashed from last box .nw to A.e ->;
+		line chop 0 chop 0.1 dashed from last box .w  to B.e ->;
+		line chop 0 chop 0.1 dashed from last box .sw to C.e ->;
+	}
+}
+
+.Tables.
+Tables are not supported yet.
+
+.Quotation.
+Quotations are not supported yet.
 
 
-§§ Tables
+§ Converter
 
-TODO.
-
-
-§§ Quotation
-
-TODO.
-
-
-§ Script
-
-There is an ‘awk(1)’ script (actually, a shell script calling ‘awk(1)’)
+There is an ‘awk(1)’ script (actually a shell script that calls awk)
 used for converting text from the ‘Incipit Markup Language’ into troff
 (using the -ms macro) or html.  The manual of this command is presented
 below.
@@ -194,17 +273,24 @@ below.
 	       incipit [-T format] file...
 
 	DESCRIPTION
-	       incipit convert files marked up in the Incipit Markup
+	       incipit converts files marked up in the Incipit Markup
 	       Language into troff using the -ms format (the default) or
 	       into html.  The formated file is written to standard
 	       output.
-	
+
 	       The options are as follows:
-	
+
 	       -T format
-	              Convert to format (either "ms" or "html").  If not
-	              supplied, consider "ms" as default.
-	
+	              Convert to given format.  Known formats are listed
+	              below.  If not supplied, consider "ms" as default.
+
+	       incipit understands the following formats:
+
+	       ms     Troff macros for formatting manuscripts.  This is
+	              the default format.
+
+	       html   Hypertext Markup Language.
+
 	SEE ALSO
 	       troff(1), ms(7)
 }

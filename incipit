@@ -74,11 +74,10 @@ function gettok(    a, n) {
 
 # get id from string
 function genid(s) {
-	gsub(/(§)[ \t]*/, "#", s)
+	sub(/^[ \t]+/, "", s)
 	gsub(/[ \t]+/, "-", s)
 	gsub(/[^-#A-Za-z0-9_/]/, "", s)
-	s = tolower(s)
-	return s
+	return tolower(s)
 }
 
 # print code (for code figures)
@@ -91,6 +90,11 @@ function printcode(s) {
 		gsub(/`/, "\\(aa", s)
 		gsub(/-/, "\\-", s)
 		sub(/^\./, "\\\\\\&&", s)
+	} else if (html) {
+		gsub(/&/, "\\&amp;", s)
+		gsub(/</, "\\&lt;", s)
+		gsub(/>/, "\\&gt;", s)
+		gsub(/"/, "\\&quot;", s)
 	}
 	printf "%s\n", s
 }
@@ -103,6 +107,11 @@ function printinlinecode(s) {
 		gsub(/'"'"'/, "\\(aq", s)
 		gsub(/`/, "\\(aa", s)
 		gsub(/-/, "\\-", s)
+	} else if (html) {
+		gsub(/&/, "\\&amp;", s)
+		gsub(/</, "\\&lt;", s)
+		gsub(/>/, "\\&gt;", s)
+		gsub(/"/, "\\&quot;", s)
 	}
 	printf "%s", s
 }
@@ -110,6 +119,19 @@ function printinlinecode(s) {
 # print text
 function printnormal(s) {
 	sub(/^[ \t]+/, "", s)
+	if (troff) {
+		gsub(/\\/, "\\e", s)
+		gsub(/"/, "\\(dq", s)
+		gsub(/'"'"'/, "\\(aq", s)
+		gsub(/`/, "\\(aa", s)
+		gsub(/-/, "\\-", s)
+		sub(/^\./, "\\\\\\&&", s)
+	} else if (html) {
+		gsub(/&/, "\\&amp;", s)
+		gsub(/</, "\\&lt;", s)
+		gsub(/>/, "\\&gt;", s)
+		gsub(/"/, "\\&quot;", s)
+	}
 	printf "%s\n", s
 }
 
@@ -261,10 +283,16 @@ function paragraph(    rem) {
 }
 
 # parse figure
-function figure(    ret, fig) {
-	if (tok ~ "^IMAGE:[ \t]") {
+function figure(    ret, fig, caption) {
+	if (tok ~ /^IMAGE:[ \t]+/) {
 		fig = IMAGE
 		printf "%s", markup[type, "IMAGE", "BEG"]
+		sub(/^IMAGE:[ \t]*/, "", tok)
+		sub(/[ \t]*{$/, "", tok)
+		caption = tok
+	} else if (tok ~ "^PIC:[ \t]") {
+		fig = PIC
+		printf "%s", markup[type, "PIC", "BEG"]
 	} else if (tok ~ "^VIDEO:[ \t]") {
 		fig = VIDEO
 		printf "%s", markup[type, "VIDEO", "BEG"]
@@ -278,13 +306,29 @@ function figure(    ret, fig) {
 			break
 		if (fig == CODE) {
 			printcode($0)
+		} else if (fig == IMAGE) {
+			sub(/^[ \t]+/, "")
+			sub(/[ \t]+$/, "")
+			printf markup[type, "IMAGE", "MID"], $0
+		} else if (troff && fig == PIC) {
+			sub(/^[ \t]+/, "")
+			gsub(/‘/, markup[type, "EMPHASIS", "BEG"])
+			gsub(/’/, markup[type, "EMPHASIS", "END"])
+			gsub(/“/, "\"" markup[type, "EMPHASIS", "BEG"])
+			gsub(/”/, markup[type, "EMPHASIS", "END"] "\"")
+			print
 		}
 	}
 	if (ret != 1) {
 		eof = 1
 	}
+	if (caption != "") {
+		printf markup[type, "CAPTION", "MID"], caption
+	}
 	if (fig == CODE) {
 		printf "%s", markup[type, "CODE", "END"]
+	} else if (fig == PIC) {
+		printf "%s", markup[type, "PIC", "END"]
 	} else if (fig == IMAGE) {
 		printf "%s", markup[type, "IMAGE", "END"]
 	} else if (fig == VIDEO) {
@@ -389,7 +433,8 @@ BEGIN {
 	if (type == "")
 		type = "ms"
 
-	troff = (type == "ms" || type == "man")
+	troff = (type == "ms")
+	html = (type == "html")
 	context = ""
 	puncttype = ""
 	tok = ""
@@ -405,8 +450,9 @@ BEGIN {
 
 	# figure types
 	CODE = 1
-	IMAGE = 2
-	VIDEO = 3
+	PIC = 2
+	IMAGE = 3
+	VIDEO = 4
 
 	# ms markup
 	markup["ms", "HEADER"] = ".de VS\n.DS\n.nf\n.ft CW\n..\n.de VE\n.ft P\n.fi\n.DE\n..\n"
@@ -437,20 +483,26 @@ BEGIN {
 	markup["ms", "TOPIC", "END"] = "\\fP\\(rq"
 	markup["ms", "PRE", "BEG"] = "\\f(CW"
 	markup["ms", "PRE", "END"] = "\\fP"
-	markup["ms", "META", "BEG"] = "\\f(CW\\[la]"
-	markup["ms", "META", "END"] = "\\[ra]\\fP"
+	markup["ms", "META", "BEG"] = "\\f(CW⟨"
+	markup["ms", "META", "END"] = "⟩\\fP"
 	markup["ms", "COLON", "BEG"] = ".B\n"
 	markup["ms", "COLON", "END"] = ".R\n"
 	markup["ms", "ENUM", "BEG"] = ".RS\n"
 	markup["ms", "ENUM", "END"] = ".RE\n"
 	markup["ms", "ITEM", "BEG"] = ".IP \\fB%s\\fP %d\n"
 	markup["ms", "ITEM", "END"] = ""
+	markup["ms", "PIC", "BEG"] = ".DS\n.PS\n"
+	markup["ms", "PIC", "END"] = ".PE\n.DE\n"
+	markup["ms", "IMAGE", "BEG"] = ""
+	markup["ms", "IMAGE", "MID"] = ".BP \"%s\" \"\" \"\" \"c\" \"\" \"\" \"\"\n"
+	markup["ms", "IMAGE", "END"] = ""
+	markup["ms", "CAPTION", "MID"] = ""
 
 	# html markup
 	markup["html", "HEADER"] = ""
 	markup["html", "FOOTER"] = "\n"
 	markup["html", "TITLE", "BEG"] = "<h1 id=\"%s\">"
-	markup["html", "TITLE", "END"] = "</h1>"
+	markup["html", "TITLE", "END"] = "</h1>\n"
 	markup["html", "SUBTITLE", "BEG"] = "<br/>"
 	markup["html", "SUBTITLE", "END"] = ""
 	markup["html", "HEADING", "BEG"] = "<p>"
@@ -458,17 +510,17 @@ BEGIN {
 	markup["html", "HEADING1", "END"] = ""
 	markup["html", "HEADING2", "BEG"] = "<br/>"
 	markup["html", "HEADING2", "END"] = ""
-	markup["html", "HEADING", "END"] = "</p>"
+	markup["html", "HEADING", "END"] = "</p>\n"
 	markup["html", "ABSTRACT", "BEG"] = "<p>"
-	markup["html", "ABSTRACT", "END"] = "</p>"
+	markup["html", "ABSTRACT", "END"] = "</p>\n"
 	markup["html", "PARAGRAPH", "BEG"] = "<p>"
-	markup["html", "PARAGRAPH", "END"] = "</p>"
+	markup["html", "PARAGRAPH", "END"] = "</p>\n"
 	markup["html", "PARATITLE", "BEG"] = "<strong>"
 	markup["html", "PARATITLE", "END"] = "</strong>"
 	markup["html", "SECTION", "BEG"] = "<h%d id=\"%s\">"
-	markup["html", "SECTION", "END"] = "</h%d>"
+	markup["html", "SECTION", "END"] = "</h%d>\n"
 	markup["html", "CODE", "BEG"] = "<figure><pre><code>"
-	markup["html", "CODE", "END"] = "</figure></pre></code>"
+	markup["html", "CODE", "END"] = "</figure></pre></code>\n"
 	markup["html", "EMPHASIS", "BEG"] = "<em>"
 	markup["html", "EMPHASIS", "END"] = "</em>"
 	markup["html", "TOPIC", "BEG"] = "“<em>"
@@ -480,9 +532,13 @@ BEGIN {
 	markup["html", "COLON", "BEG"] = "<strong>"
 	markup["html", "COLON", "END"] = "</strong>"
 	markup["html", "ENUM", "BEG"] = "<ul>"
-	markup["html", "ENUM", "END"] = "</ul>"
+	markup["html", "ENUM", "END"] = "</ul>\n"
 	markup["html", "ITEM", "BEG"] = "<li>"
-	markup["html", "ITEM", "END"] = "</li>"
+	markup["html", "ITEM", "END"] = "</li>\n"
+	markup["html", "IMAGE", "BEG"] = "<figure>"
+	markup["html", "IMAGE", "MID"] = "<img src=\"%s\">"
+	markup["html", "IMAGE", "END"] = "</figure>\n"
+	markup["html", "CAPTION", "MID"] = "<figcaption>%s</figcaption>\n"
 
 	document()
 }
