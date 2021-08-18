@@ -24,6 +24,7 @@ alongside the structure of the text, to format documents.  For example,
 the section character (⟨§⟩, U+00A7) is used to markup section headers.
 The bullet character (⟨•⟩, U+2022) is used to markup bulleted lists.
 
+.Inline punctuation.
 Punctuations are mostly used within a paragraph.  Those punctuations
 (called inline punctuation) markup emphases, references, topics or
 preformated text.  Punctuations cannot be nested: a portion of text
@@ -39,7 +40,7 @@ inline punctuations are enumerated below.
          preserved in the final document.
 • Reference: Text «between double angle quotes» is reference.  The angle
              quotes must be Unicode characters ⟨«⟩ (U+00AB) and ⟨»⟩
-             (U+00BB).  More on reference text in a paragraph below.
+             (U+00BB).  References are not supported yet.
 • Preformated: Text `between grave accents` or {between curly braces}
                is preformated.  Those punctuation are regular ASCII
                punctuation.  Preformated text is formated in monospaced
