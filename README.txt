@@ -10,7 +10,7 @@ text itself to format documents.  ‘Incipit’ is also the name of an
 In the ‘Incipit Markup Language’, a paragraph is a block of text
 delimited by blank lines.  A paragraph may be preceded by a section
 header and succeded by a figure.  Enumerations (also knonw as “lists”)
-are special types of paragraphs (although I interpret a enumeration as
+are special types of paragraphs (although I interpret an enumeration as
 the continuation of the paragraph before it).
 
 In this document, I call “period” sentences delimited by a period.
