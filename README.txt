@@ -169,17 +169,6 @@ presented below.
 	}
 }
 
-.Image.
-An image can be included in a figure by preceding the opening bracket
-with the ⟨IMAGE:⟩ keyword, optionally followed by the image caption,
-before the opening curly bracket.  Note that only `.eps` images are
-supported when converting to troff.  When converting to html, however,
-common formats such as `.jpg` and `.png` are supported.
-
-IMAGE: A monkey riding a parrot. {
-	figure.eps
-}
-
 .PIC Diagram.
 When converting to ms, diagrams can be written on the PIC language.
 Diagrams are marked with the ⟨PIC:⟩ keyword before the opening curly
@@ -188,66 +177,43 @@ are emphasis and topic (topic is converted to a emphasis between ASCII
 double quotes).
 
 PIC: {
-	define filter {box ht 0.25 rad 0.125}
-	lineht = 0.25;
-	Top: [
-		right;
-		box “ms” "sources";
-		move;
-		box “HTML” "sources";
-		move;
-		box “linuxdoc-sgml” "sources" wid 1.5;
-		move;
-		box “Texinfo” "sources";
+	GRAM: box width 1 “gram.y”
+	move right from right of GRAM
+	move right; move right; move right
+	L: box width 1 “lex.l”
+	move down from bottom of GRAM
+	YACC: ellipse "yacc"
+	move down from bottom of L
+	LEX: ellipse "lex"
+	move down from bottom of YACC
+	SRC1: box width 1 “gram.c”
+	move down from bottom of LEX
+	SRC3: box width 1 “lex.c”
+	move right from right of SRC1
+	SRC2: box width 1 “main.c”
+	move down from bottom of SRC2
+	CC: ellipse "cc"
+	move down from bottom of CC;
+	ELF: box width 1 “a.out”
+	arrow from bottom of GRAM to top of YACC
+	arrow from bottom of YACC to top of SRC1
+	arrow from bottom of L to top of LEX
+	arrow from bottom of LEX to top of SRC3
+	arrow from bottom of SRC1 to upper left of CC
+	arrow from bottom of SRC2 to top of CC
+	arrow from bottom of SRC3 to upper right of CC
+	arrow from bottom of CC to top of ELF
+}
 
-		line down from 1st box .s lineht;
-		A: line down;
-		line down from 2nd box .s; filter “html2ms”;
-		B: line down;
-		line down from 3rd box .s; filter “format”;
-		C: line down;
-		line down from 4th box .s; filter “texi2roff”;
-		D: line down;
-	]
-	move down 1 from last [] .s;
-	Anchor: box wid 1 ht 0.75 “ms” "intermediate" "form";
-	arrow from Top.A.end to Anchor.nw;
-	arrow from Top.B.end to 1/3 of the way between Anchor.nw and Anchor.ne;
-	arrow from Top.C.end to 2/3 of the way between Anchor.nw and Anchor.ne;
-	arrow from Top.D.end to Anchor.ne
-	{
-		# PostScript column
-		move to Anchor .sw;
-		line down left then down ->;
-		filter “pic”;
-		arrow;
-		filter “eqn”;
-		arrow;
-		filter “tbl”;
-		arrow;
-		filter “groff”;
-		arrow;
-		box "PostScript";
+.Image.
+Images can be inserted on a document by preceding the opening bracket
+with the ⟨IMAGE:⟩ keyword, optionally followed by a caption.  Note that
+only `.eps` images are supported when converting to troff.  When
+converting to html, however, common formats such as `.jpg` and `.png`
+are supported.
 
-		# HTML column
-		move to Anchor .se;
-		line down right then down ->;
-		A: filter dotted “pic2img”;
-		arrow;
-		B: filter dotted “eqn2html”;
-		arrow;
-		C: filter dotted “tbl2html”;
-		arrow;
-		filter “ms2html”;
-		arrow;
-		box "HTML";
-
-		# Nonexistence caption
-		box dashed wid 1 at B + (2, 0) "These tools" "don’t yet exist";
-		line chop 0 chop 0.1 dashed from last box .nw to A.e ->;
-		line chop 0 chop 0.1 dashed from last box .w  to B.e ->;
-		line chop 0 chop 0.1 dashed from last box .sw to C.e ->;
-	}
+IMAGE: A monkey riding a parrot. {
+	figure.eps
 }
 
 .Tables.

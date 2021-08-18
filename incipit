@@ -282,42 +282,32 @@ function paragraph(    rem) {
 	ungettok()
 }
 
-# parse figure
-function figure(    ret, fig, caption) {
-	if (tok ~ /^IMAGE:[ \t]+/) {
-		fig = IMAGE
-		printf "%s", markup[type, "IMAGE", "BEG"]
-		sub(/^IMAGE:[ \t]*/, "", tok)
-		sub(/[ \t]*{$/, "", tok)
-		caption = tok
-	} else if (tok ~ "^PIC:[ \t]") {
-		fig = PIC
-		printf "%s", markup[type, "PIC", "BEG"]
-	} else if (tok ~ "^VIDEO:[ \t]") {
-		fig = VIDEO
-		printf "%s", markup[type, "VIDEO", "BEG"]
-	} else {
-		fig = CODE
-		printf "%s", markup[type, "CODE", "BEG"]
-	}
-	line = ""
+# parse code figure
+function code(    ret) {
+	printf "%s", markup[type, "CODE", "BEG"]
 	while ((ret = (getline)) == 1) {
 		if ($0 ~ /^}[ \t]*$/)
 			break
-		if (fig == CODE) {
-			printcode($0)
-		} else if (fig == IMAGE) {
-			sub(/^[ \t]+/, "")
-			sub(/[ \t]+$/, "")
-			printf markup[type, "IMAGE", "MID"], $0
-		} else if (troff && fig == PIC) {
-			sub(/^[ \t]+/, "")
-			gsub(/‘/, markup[type, "EMPHASIS", "BEG"])
-			gsub(/’/, markup[type, "EMPHASIS", "END"])
-			gsub(/“/, "\"" markup[type, "EMPHASIS", "BEG"])
-			gsub(/”/, markup[type, "EMPHASIS", "END"] "\"")
-			print
-		}
+		printcode($0)
+	}
+	if (ret != 1) {
+		eof = 1
+	}
+	printf "%s", markup[type, "CODE", "END"]
+}
+
+# parse image figure
+function image(    ret, fig, caption) {
+	printf "%s", markup[type, "IMAGE", "BEG"]
+	sub(/^IMAGE:[ \t]*/, "", tok)
+	sub(/[ \t]*{$/, "", tok)
+	caption = tok
+	while ((ret = (getline)) == 1) {
+		if ($0 ~ /^}[ \t]*$/)
+			break
+		sub(/^[ \t]+/, "")
+		sub(/[ \t]+$/, "")
+		printf markup[type, "IMAGE", "MID"], $0, caption
 	}
 	if (ret != 1) {
 		eof = 1
@@ -325,14 +315,37 @@ function figure(    ret, fig, caption) {
 	if (caption != "") {
 		printf markup[type, "CAPTION", "MID"], caption
 	}
-	if (fig == CODE) {
-		printf "%s", markup[type, "CODE", "END"]
-	} else if (fig == PIC) {
-		printf "%s", markup[type, "PIC", "END"]
-	} else if (fig == IMAGE) {
-		printf "%s", markup[type, "IMAGE", "END"]
-	} else if (fig == VIDEO) {
-		printf "%s", markup[type, "VIDEO", "END"]
+	printf "%s", markup[type, "IMAGE", "END"]
+}
+
+# parse pic figure
+function pic(    ret) {
+	printf "%s", markup[type, "PIC", "BEG"]
+	while ((ret = (getline)) == 1) {
+		if ($0 ~ /^}[ \t]*$/)
+			break
+		sub(/^[ \t]+/, "")
+		gsub(/‘/, markup[type, "EMPHASIS", "BEG"])
+		gsub(/’/, markup[type, "EMPHASIS", "END"])
+		gsub(/“/, "\"" markup[type, "EMPHASIS", "BEG"])
+		gsub(/”/, markup[type, "EMPHASIS", "END"] "\"")
+		print
+	}
+	if (ret != 1) {
+		eof = 1
+	}
+	printf "%s", markup[type, "PIC", "END"]
+}
+
+# parse figure
+function figure(    ret, fig, caption) {
+	line = ""
+	if (tok ~ /^IMAGE:[ \t]+/) {
+		image()
+	} else if (tok ~ "^PIC:[ \t]") {
+		pic()
+	} else {
+		code()
 	}
 }
 
@@ -448,12 +461,6 @@ BEGIN {
 	ENUMMARK = 3
 	FIGUREMARK = 4
 
-	# figure types
-	CODE = 1
-	PIC = 2
-	IMAGE = 3
-	VIDEO = 4
-
 	# ms markup
 	markup["ms", "HEADER"] = ".de VS\n.DS\n.nf\n.ft CW\n..\n.de VE\n.ft P\n.fi\n.DE\n..\n"
 	markup["ms", "FOOTER"] = ""
@@ -493,8 +500,8 @@ BEGIN {
 	markup["ms", "ITEM", "END"] = ""
 	markup["ms", "PIC", "BEG"] = ".DS\n.PS\n"
 	markup["ms", "PIC", "END"] = ".PE\n.DE\n"
-	markup["ms", "IMAGE", "BEG"] = ""
-	markup["ms", "IMAGE", "MID"] = ".BP \"%s\" \"\" \"\" \"c\" \"\" \"\" \"\"\n"
+	markup["ms", "IMAGE", "BEG"] = ".PP\n"
+	markup["ms", "IMAGE", "MID"] = ".BP \"%s\" \"\" \"\" \"c\" \"\" \"\" \"%s\"\n"
 	markup["ms", "IMAGE", "END"] = ""
 	markup["ms", "CAPTION", "MID"] = ""
 
@@ -517,7 +524,7 @@ BEGIN {
 	markup["html", "PARAGRAPH", "END"] = "</p>\n"
 	markup["html", "PARATITLE", "BEG"] = "<strong>"
 	markup["html", "PARATITLE", "END"] = "</strong>"
-	markup["html", "SECTION", "BEG"] = "<h%d id=\"%s\">"
+	markup["html", "SECTION", "BEG"] = "<h%d id=\"%s\" alt=\"%s\">"
 	markup["html", "SECTION", "END"] = "</h%d>\n"
 	markup["html", "CODE", "BEG"] = "<figure><pre><code>"
 	markup["html", "CODE", "END"] = "</figure></pre></code>\n"
