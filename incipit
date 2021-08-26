@@ -99,7 +99,7 @@ function printcode(s) {
 		gsub(/\\/, "\\e", s)
 		gsub(/"/, "\\(dq", s)
 		gsub(/'"'"'/, "\\(aq", s)
-		gsub(/`/, "\\(aa", s)
+		gsub(/`/, "\\(ga", s)
 		gsub(/-/, "\\-", s)
 		sub(/^\./, "\\\\\\&&", s)
 	} else if (html) {
@@ -117,7 +117,7 @@ function printinlinecode(s) {
 		gsub(/\\/, "\\e", s)
 		gsub(/"/, "\\(dq", s)
 		gsub(/'"'"'/, "\\(aq", s)
-		gsub(/`/, "\\(aa", s)
+		gsub(/`/, "\\(ga", s)
 		gsub(/-/, "\\-", s)
 	} else if (html) {
 		gsub(/&/, "\\&amp;", s)
@@ -132,10 +132,11 @@ function printinlinecode(s) {
 function printnormal(s) {
 	sub(/^[ \t]+/, "", s)
 	if (troff) {
+		gsub(/[ \t]+/, " ", s)
 		gsub(/\\/, "\\e", s)
 		gsub(/"/, "\\(dq", s)
 		gsub(/'"'"'/, "\\(aq", s)
-		gsub(/`/, "\\(aa", s)
+		gsub(/`/, "\\(ga", s)
 		gsub(/-/, "\\-", s)
 		sub(/^\./, "\\\\\\&&", s)
 	} else if (html) {
@@ -193,6 +194,7 @@ function expandpunct(after,    before, punct) {
 # print text marked up with inline punctuation
 function printmarkup(s) {
 	sub(/^[ \t]+/, "", s)
+	gsub(/[ \t]+/, " ", s)
 	printf "%s\n", expandpunct(s)
 }
 
@@ -400,10 +402,12 @@ function enumeration(    lvl, enumlvl, label, colon) {
 			} else {
 				printf "%s", markup[type, "ITEM", "BEG"]
 			}
-			if (colon != "") {
+			if (colon != "" && colon !~ /«/) {
 				printf "%s", markup[type, "COLON", "BEG"]
 				printnormal(colon)
 				printf "%s", markup[type, "COLON", "END"]
+			} else {
+				printnormal(colon)
 			}
 		} else {
 			printmarkup(tok)
@@ -564,7 +568,11 @@ BEGIN {
 	QUOTEEND = 7
 
 	# ms markup
-	markup["ms", "HEADER"] = ".de VS\n.DS\n.nf\n.ft CW\n..\n.de VE\n.ft P\n.fi\n.DE\n..\n"
+	markup["ms", "HEADER"] = ".de VS\n.DS\n.nf\n.ft CW\n..\n.de VE\n.ft P\n.fi\n.DE\n..\n\
+.fp 1 R LinLibertine_R ttf\n\
+.fp 2 I LinLibertine_RI ttf\n\
+.fp 3 B LinLibertine_RB ttf\n\
+.fp 4 V LinLibertine_R ttf\n"
 	markup["ms", "FOOTER"] = ""
 	markup["ms", "TITLE", "BEG"] = ".TL\n"
 	markup["ms", "TITLE", "END"] = ""

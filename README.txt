@@ -177,24 +177,27 @@ are emphasis and topic (topic is converted to a emphasis between ASCII
 double quotes).
 
 PIC: {
-	GRAM: box width 1 “gram.y”
-	move right from right of GRAM
-	move right; move right; move right
-	L: box width 1 “lex.l”
-	move down from bottom of GRAM
-	YACC: ellipse "yacc"
-	move down from bottom of L
-	LEX: ellipse "lex"
-	move down from bottom of YACC
 	SRC1: box width 1 “gram.c”
-	move down from bottom of LEX
-	SRC3: box width 1 “lex.c”
-	move right from right of SRC1
+	move right
 	SRC2: box width 1 “main.c”
+	move right
+	SRC3: box width 1 “lex.c”
+
+	move up from top of SRC1
+	YACC: ellipse "yacc"
+	move up
+	GRAM: box width 1 “gram.y”
+
+	move up from top of SRC3
+	LEX: ellipse "lex"
+	move up
+	L: box width 1 “lex.y”
+
 	move down from bottom of SRC2
 	CC: ellipse "cc"
-	move down from bottom of CC;
+	move down
 	ELF: box width 1 “a.out”
+
 	arrow from bottom of GRAM to top of YACC
 	arrow from bottom of YACC to top of SRC1
 	arrow from bottom of L to top of LEX
