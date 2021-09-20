@@ -95,6 +95,43 @@ Start a code block.
 A code block must be ended with
 .BR .CE .
 .TP
+.B .FC \(dq\fIcaption\fP\(dq [\fItype\fP]
+Specify the caption of a figure and its type.
+Two types of captions are known:
+.B f
+(for regular figures)
+and
+.B t
+(for tables).
+When this macro is used, the internal counter that counts figures
+(or the internal counter that counts tables)
+is incremented.
+Then the it is printed the string
+.B Figure N: CAPTION
+(or
+.BR "Table N: CAPTION" ),
+where
+.B N
+is the value of the counter of figures (or tables),
+and
+.B CAPTION
+is the provided caption.
+The strings \(dqFigure\(dq and \(dqTable\(dq
+are actually the values of the strings
+.B F
+and
+.B T
+respectively.
+.TP
+.B .FE
+End a figure started by
+.BR .FS .
+.TP
+.B .FS
+Start a figure.
+A figure must be ended with
+.BR .FS .
+.TP
 .B .LE
 End a list started with the
 .B .LS
