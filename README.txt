@@ -1,21 +1,21 @@
                                 Incipit:
                  A Unicode-based Text Markup Language.
-                        Seninha (aka phillbush).
+                        Seninha (aka phillbush)
 
 The ‘Incipit Markup Language’ (or ‘Incipit’, for short) is a plain text
 markup language that uses Unicode characters and the structure of the
-text itself to format documents.  ‘Incipit’ is also the name of an
-‘awk(1)’ script that converts ‘Incipit’ documents to html or troff.
+text itself to format documents.  ‘Incipit’ is also the name of a script
+that converts ‘Incipit’ documents to html or troff.
 
 In the ‘Incipit Markup Language’, a paragraph is a block of text
 delimited by blank lines.  A paragraph may be preceded by a section
 header and succeded by a figure.  Enumerations (also knonw as “lists”)
-are special types of paragraphs (although I interpret an enumeration as
-the continuation of the paragraph before it).
+are special types of paragraphs (although some people interpret an
+enumeration as the continuation of the paragraph before it).
 
-In this document, I call “period” sentences delimited by a period.
-I also call “colon” a segment of text delimited by a colon or
-semi-colon.
+In this document, the word “period” refers sentences delimited by a
+period.  And the word “colon” refers to a segment of text delimited
+by a colon or semi-colon.
 
 § Punctuation
 
@@ -153,14 +153,16 @@ Figures are text delimited between curly brackets.  The opening curly
 bracket must be the last character in a line and the closing curly
 bracket must be the first character in a line.  The content of a figure
 is usually idented with a tab, so the first tab of each code line is
-removed in the final document.
+removed in the final document.  A tag before the open curly bracket and
+followed by a colon indicates the type of the figure.  The content
+between the tag and the open curly bracket is the caption
 
 .Code Listings.
 The simplest figure is a code listing, an example of which,
 copied from the second edition of “The C Programming Language” book, is
 presented below.
 
-{
+CODE: Hello World. {
 	#include <stdio.h>
 
 	main()
@@ -170,13 +172,13 @@ presented below.
 }
 
 .PIC Diagrams.
-When converting to ms, diagrams can be written in the PIC language.
+When converting to troff, diagrams can be written in the PIC language.
 Diagrams are marked with the ⟨PIC:⟩ keyword before the opening curly
 bracket.  The only punctuation that are processed inside a PIC figure
 are emphasis and topic (topic is converted to a emphasis between ASCII
 double quotes).
 
-PIC: {
+PIC: Compilation process. {
 	SRC1: box width 1 “gram.c”
 	move right
 	SRC2: box width 1 “main.c”
@@ -231,28 +233,64 @@ table.
 ┌─────────┬──────┬────────────┬───────────────┐
 │ COUNTRY │ AREA │ POPULATION │ CONTINENT     │
 ╞═════════╪══════╪════════════╪═══════════════╡
-│ USSR    │ 8649 │ 275        │ Asia          │
+│ Brazil  │ 3286 │ 134        │ South America │
 ├─────────┼──────┼────────────┼───────────────┤
 │ Canada  │ 3852 │ 25         │ North America │
 ├─────────┼──────┼────────────┼───────────────┤
 │ China   │ 3705 │ 1032       │ Asia          │
 ├─────────┼──────┼────────────┼───────────────┤
-│ USA     │ 3615 │ 237        │ North America │
-├─────────┼──────┼────────────┼───────────────┤
-│ Brazil  │ 3286 │ 134        │ South America │
-├─────────┼──────┼────────────┼───────────────┤
-│ India   │ 1267 │ 746        │ Asia          │
-├─────────┼──────┼────────────┼───────────────┤
-│ Mexico  │ 762  │ 78         │ North America │
+│ England │ 94   │ 56         │ Europe        │
 ├─────────┼──────┼────────────┼───────────────┤
 │ France  │ 211  │ 55         │ Europe        │
 ├─────────┼──────┼────────────┼───────────────┤
-│ Japan   │ 144  │ 120        │ Asia          │
-├─────────┼──────┼────────────┼───────────────┤
 │ Germany │ 96   │ 61         │ Europe        │
 ├─────────┼──────┼────────────┼───────────────┤
-│ England │ 94   │ 56         │ Europe        │
+│ India   │ 1267 │ 746        │ Asia          │
+├─────────┼──────┼────────────┼───────────────┤
+│ Japan   │ 144  │ 120        │ Asia          │
+├─────────┼──────┼────────────┼───────────────┤
+│ Mexico  │ 762  │ 78         │ North America │
+├─────────┼──────┼────────────┼───────────────┤
+│ USA     │ 3615 │ 237        │ North America │
+├─────────┼──────┼────────────┼───────────────┤
+│ USSR    │ 8649 │ 275        │ Asia          │
 └─────────┴──────┴────────────┴───────────────┘
+Country table from The AWK Book.
+
+.Tables (row span).
+If a cell in a table contains only two apostrophes (⟨''⟩, called
+“ditto”), this cell contains the same content of the the cell above it,
+and both cells are merged into a single cell.  We call this phenomenon a
+“row span”.  Row spans are only supported when converting to troff.
+Column span is not supported at all.  The following is an example of a
+table with row span.
+
+┌─────────┬──────┬────────────┬───────────────┐
+│ COUNTRY │ AREA │ POPULATION │ CONTINENT     │
+╞═════════╪══════╪════════════╪═══════════════╡
+│ Brazil  │ 3286 │ 134        │ South America │
+├─────────┼──────┼────────────┼───────────────┤
+│ Canada  │ 3852 │ 25         │ North America │
+├─────────┼──────┼────────────┼───────────────┤
+│ Mexico  │ 762  │ 78         │ ''            │
+├─────────┼──────┼────────────┼───────────────┤
+│ USA     │ 3615 │ 237        │ ''            │
+├─────────┼──────┼────────────┼───────────────┤
+│ France  │ 211  │ 55         │ Europe        │
+├─────────┼──────┼────────────┼───────────────┤
+│ Germany │ 96   │ 61         │ ''            │
+├─────────┼──────┼────────────┼───────────────┤
+│ England │ 94   │ 56         │ ''            │
+├─────────┼──────┼────────────┼───────────────┤
+│ China   │ 3705 │ 1032       │ Asia          │
+├─────────┼──────┼────────────┼───────────────┤
+│ Japan   │ 144  │ 120        │ ''            │
+├─────────┼──────┼────────────┼───────────────┤
+│ India   │ 1267 │ 746        │ ''            │
+├─────────┼──────┼────────────┼───────────────┤
+│ USSR    │ 8649 │ 275        │ ''            │
+└─────────┴──────┴────────────┴───────────────┘
+Country table from The AWK Book.
 
 .Tables (alternative form).
 ‘Incipit’ supports an alternative format for tables, in which the first
@@ -263,18 +301,19 @@ such table is presented below.
 ┌─────────┬──────┬────────────┬───────────────┐
 │ COUNTRY │ AREA │ POPULATION │ CONTINENT     │
 ├─────────┼──────┼────────────┼───────────────┤
-│ USSR    │ 8649 │ 275        │ Asia          │
+│ Brazil  │ 3286 │ 134        │ South America │
 │ Canada  │ 3852 │ 25         │ North America │
 │ China   │ 3705 │ 1032       │ Asia          │
-│ USA     │ 3615 │ 237        │ North America │
-│ Brazil  │ 3286 │ 134        │ South America │
-│ India   │ 1267 │ 746        │ Asia          │
-│ Mexico  │ 762  │ 78         │ North America │
-│ France  │ 211  │ 55         │ Europe        │
-│ Japan   │ 144  │ 120        │ Asia          │
-│ Germany │ 96   │ 61         │ Europe        │
 │ England │ 94   │ 56         │ Europe        │
+│ France  │ 211  │ 55         │ Europe        │
+│ Germany │ 96   │ 61         │ Europe        │
+│ India   │ 1267 │ 746        │ Asia          │
+│ Japan   │ 144  │ 120        │ Asia          │
+│ Mexico  │ 762  │ 78         │ North America │
+│ USA     │ 3615 │ 237        │ North America │
+│ USSR    │ 8649 │ 275        │ Asia          │
 └─────────┴──────┴────────────┴───────────────┘
+Country table from The AWK Book.
 
 .Quotation.
 Quotations are special figures which, instead of curly braces, are
@@ -290,41 +329,73 @@ written between double quotes.
 	defined by POSIX.
 ”
 
-§ Converter
+§ Conventions
 
-There is an ‘awk(1)’ script (actually a shell script that calls awk)
-used for converting text from the ‘Incipit Markup Language’ into troff
-(using the -ms macro) or html.  The manual of this command is presented
-below.
+Texts written in the Incipit markup languages use some unnusual
+conventions that are described in this section.
+
+.Apostrophe for abbreviations.
+In usual non-Incipit text, a full stop can be used both to mark the end
+of a period and to mark the end of an abbreviations.  This ambiguity
+does not exist in Incipit.  In Incipit, abbreviations should be marked
+with appostrophes.
+
+.Uppercase for emphasis.
+In usual non-Incipit text, the italic (or bold) font is used to render
+segments of text with emphasis.  In Incipit, non-roman fonts are used
+for syntactic purposes (for example, bold text is used for the title of
+a paragraph, and italic is used for topics and quotations).  In Incipit,
+text with emphasis should be written in all caps.
+
+§ Conversion
+
+The `incipit(1)` awk script converts a text written in Incipit to HTML
+or to the `mi(7)` `troff(1)` macro package.
+
+Converting an Incipit text to HTML is simple, just use the `incipit(1)`
+script to read the text file, pass it the `-T html` option as argument,
+and the converted document is printed to standard output.  Since it is
+an `awk(1)` script, remember to pass two hyphens as argument first.
 
 {
-	INCIPIT(1)           General Commands Manual          INCIPIT(1)
-
-	NAME
-	       incipit - format incipit document
-
-	SYNOPSIS
-	       incipit [-T format] file...
-
-	DESCRIPTION
-	       incipit converts files marked up in the Incipit Markup
-	       Language into troff using the -ms format (the default) or
-	       into html.  The formated file is written to standard
-	       output.
-
-	       The options are as follows:
-
-	       -T format
-	              Convert to given format.  Known formats are listed
-	              below.  If not supplied, consider "ms" as default.
-
-	       incipit understands the following formats:
-
-	       ms     Troff macros for formatting manuscripts.  This is
-	              the default format.
-
-	       html   Hypertext Markup Language.
-
-	SEE ALSO
-	       troff(1), ms(7)
+	incipit -- -T html <file.txt >file.html
 }
+
+Converting an Incipit text to PDF is more comples.  First, the text must
+be converted to `mi(7)`, a `troff(1)` macro package used only for
+converting Incipit text to pdf.  There are three possible formats types
+that must be supplied with the `-T` option: `paper` (for technical
+papers), `slides` (for slides presentation) or `book` (for books).
+If no argument is provided, use `paper` as default.
+
+{
+	incipit -- -T paper <file.txt >file.mi
+}
+
+Then, we need to convert the `.mi` file to a `.ps` (postscript) file,
+this is done with a series of commands in a pipeline.  Those commands
+depend on the troff system and vary between Groff, Heirloom Doctools,
+etc.  Using Heirloom Doctools, the command is the following to generate
+a portrait document (to generate a landscape document, used for slides,
+replace `portrait` with `landscape` in the command below):
+
+{
+	pic <file.mi |\
+	tbl |\
+	eqn |\
+	troff -mi -mpictures |\
+	dpost -pportrait >file.ps
+}
+
+Then, we need to convert the `.ps` file to a `.pdf` file.  This is done
+with the `ps2pdf(1)` command.  This command accepts as argument the
+papersize, which can be `a4`, `letter`, `halfletter`, etc.
+
+{
+	ps2pdf "-sPAPERSIZE=a4" file.ps file.pdf
+}
+
+A Makefile automatizing the conversion process is distributed with
+Incipit.  For more information on the script, a manual for it is also
+provided.  For more information on the `mi(7)` macro package, a manual
+for it is provided as well.

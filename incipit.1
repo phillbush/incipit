@@ -1,0 +1,45 @@
+.TH INCIPIT 1
+.SH NAME
+incipit \- format incipit document
+.SH SYNOPSIS
+.B incipit --
+.RB [ \-P
+.IR punctuation ]
+.RB [ \-T
+.IR format ]
+.IR file ...
+.SH DESCRIPTION
+.B incipit
+converts files marked up in the Incipit Markup Language into html or
+into the
+.IR mi (7)
+troff macro language.
+The formatted file is written to standard output.
+.PP
+The options are as follows:
+.TP
+.BI \-P " punctuation"
+TODO.
+.TP
+.BI \-T " format"
+Convert to given format.
+Known formats are listed below.
+If not supplied, consider "paper" as default.
+.PP
+.B incipit
+understands the following formats.
+.TP
+book
+Book document (using the -mi macro package).
+.TP
+paper
+Paper document (using the -mi macro package).
+.TP
+slide
+Slide presentation (using the -mi macro package).
+.TP
+html
+Hypertext Markup Language.
+.SH SEE ALSO
+.IR troff (1),
+.IR mi (7)
