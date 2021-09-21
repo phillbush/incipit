@@ -349,7 +349,6 @@
 .nr lN +1
 .nr iN +1
 .nr l\\n(lN 0
-.rm l\\n(lN
 .ie !"\\$1"" .af l\\n(lN \\$1
 .el          .ds l\\n(lN b
 .nr i\\n(iN \\n(.iu
@@ -364,6 +363,7 @@
 .in \\n(i\\n(iNu
 .nr lN -1
 .nr iN -1
+.rr l\\n(lN
 ..
 .       \" list item
 .de LI

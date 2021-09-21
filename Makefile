@@ -34,7 +34,7 @@ install:
 	install -D -m 755 incipit ${DESTDIR}${PREFIX}/bin/incipit
 	install -D -m 644 incipit.1 ${DESTDIR}${MANPREFIX}/man1/incipit.1
 	install -D -m 644 mi.7 ${DESTDIR}${MANPREFIX}/man7/mi.7
-	install -D -m 644 i.roff ${DESTDIR}${TMACPREFIX}/tmac.i
+	install -D -m 644 mi.roff ${DESTDIR}${TMACPREFIX}/tmac.i
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/incipit
