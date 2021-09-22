@@ -5,14 +5,23 @@ TMACPREFIX = ${PREFIX}/share/tmac
 # target file: README.pdf or README.html
 DOC = README.pdf
 
-# paper format: paper, slides, book, or html
+# configuration for a4 papersize (used for technical papers)
 FORMAT = paper
-
-# paper orientation: portrait, or landscape
-ORIENTATION = portrait
-
-# paper size: a4, letter, or halfletter
 PAPERSIZE = a4
+ORIENTATION = portrait
+TFLAGS = -rH29.7c -rL16c -rT3c -rB2c -rE2.5c -rO2.5c
+
+# configuration for landscape letter papersize (used for slides)
+#FORMAT = slides
+#PAPERSIZE = letter
+#ORIENTATION = landscape
+#TFLAGS = -rH8.5i -rL9i -rT1i -rB1i -rE1i -rO1i
+
+# configuration for halfletter papersize (used for books)
+#FORMAT = book
+#PAPERSIZE = halfletter
+#ORIENTATION = portrait
+#TFLAGS = -rH21.6c -rL13.6c -rT2.1c -rB2.1c -rE2c -rO2c
 
 .SUFFIXES: .txt .pdf .ps .mi .html
 
@@ -22,7 +31,7 @@ all: ${DOC}
 	ps2pdf "-sPAPERSIZE=${PAPERSIZE}" $< $@
 
 .mi.ps:
-	<$< pic | tbl | eqn | troff -mi -mpictures - | dpost -p"${ORIENTATION}" >$@
+	<$< pic | tbl | eqn | troff ${TFLAGS} -mi -mpictures - | dpost -p"${ORIENTATION}" >$@
 
 .txt.mi:
 	./incipit -- -T ${FORMAT} $< >$@
@@ -34,7 +43,7 @@ install:
 	install -D -m 755 incipit ${DESTDIR}${PREFIX}/bin/incipit
 	install -D -m 644 incipit.1 ${DESTDIR}${MANPREFIX}/man1/incipit.1
 	install -D -m 644 mi.7 ${DESTDIR}${MANPREFIX}/man7/mi.7
-	install -D -m 644 mi.roff ${DESTDIR}${TMACPREFIX}/tmac.i
+	install -D -m 644 mi.tmac ${DESTDIR}${TMACPREFIX}/tmac.i
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/incipit

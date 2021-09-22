@@ -243,32 +243,39 @@ and to print the top title (header).
 The
 .B mi
 macro package uses number registers to control the formatting of the document.
-All number registers in
-.B mi
-that are exposed to the user consist of two uppercase letters.
 Number registers can be set at the top of a document using the
 .B .nr
 troff request.
 .PP
-Known number registers are listed below.
+Known number registers that define the page size are listed below.
+They consist of a single uppercase letter and defaults to the size of an ISO A4 page.
 .TP
-.B BM
-Bottom margin for both odd and even pages.
+.B B
+Bottom margin for both odd and even pages (default: 2cm).
 .TP
-.B EM
-Left margin for even pages.
+.B E
+Left margin for even pages (defualt: 2.5cm).
+.TP
+.B H
+Page height (default: 29.7cm).
+.TP
+.B L
+Line length (default: 16cm).
+.TP
+.B O
+Left margin for odd pages (default: 2.5cm).
+.TP
+.B T
+Top margin for both odd and even pages (default: 3cm).
+.PP
+Other known number registers are listed below.
+The consist of two uppercase letters.
 .TP
 .B FD
 Figure spacing (distance).
 .TP
 .B FL
 Footnote length
-.TP
-.B LL
-Line length.
-.TP
-.B OM
-Left margin for odd pages.
 .TP
 .B PD
 Paragraph spacing (distance).
@@ -303,9 +310,6 @@ Section style:
 5 for numbering until the fifth level heading.
 Five is the maximum level of section heading.
 (default 4).
-.TP
-.B TM
-Top margin for both odd and even pages.
 .TP
 .B VS
 Vertical line spacing.

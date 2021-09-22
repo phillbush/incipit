@@ -377,13 +377,15 @@ this is done with a series of commands in a pipeline.  Those commands
 depend on the troff system and vary between Groff, Heirloom Doctools,
 etc.  Using Heirloom Doctools, the command is the following to generate
 a portrait document (to generate a landscape document, used for slides,
-replace `portrait` with `landscape` in the command below):
+replace `portrait` with `landscape` in the command below).  The `-r*`
+options specify the size of the paper for troff, see `mi(7)` and
+`troff(1)` for more information.
 
 {
-	pic <file.mi |\
+	<file.mi pic |\
 	tbl |\
-	eqn |\
-	troff -mi -mpictures |\
+	troff -rH29.7c -rL16c -rT3c -rB2c -rE2.5c -rO2.5c \
+	-mi -mpictures - |\
 	dpost -pportrait >file.ps
 }
 

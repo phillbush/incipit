@@ -2,14 +2,15 @@
 .       \" begin of document
 .de bG
 .fi
-.ll \\n(LLu
-.lt \\n(LLu
+.ll \\nLu
+.lt \\nLu
 .wh 0 tM
-.wh -\\n(BMu/2u bT
-.wh -\\n(BMu bM
+.wh -\\nBu/2u bT
+.wh -\\nBu bM
 .tM
 .nr iN 0
 .nr bG 1
+.pl \\nH
 ..
 .       \" draw horizontal line
 .de HL
@@ -26,9 +27,9 @@
 ..
 .       \" top margin
 .de tM
-'sp \\n(TMu/2u
+'sp \\nTu/2u
 .ev 1
-.lt \\n(LLu
+.lt \\nLu
 .ie \\n(SD=1 \{\
 .       ps \\n(PS-6
 .       vs \\n(VS-6p
@@ -38,7 +39,8 @@
 .       vs \\n(VS-2p
 .\}
 .ft R
-.if \\n(SD=2 \{\
+.ie \\n%=1 .tl 
+.el .ie \\n(SD=2 \{\
 .        if e \{\
 .                ie !"\\*(cH"" .tl %\\*(cH
 .                el            .tl %\\*(tL
@@ -48,12 +50,14 @@
 .                el            .tl %
 .        \}
 .\}
-.if \\n(SD=0 .tl %
-.if o .po \\n(OMu
-.if e .po \\n(EMu
+.el .if \\n(SD=0 .tl %
+.if o .po \\nOu
+.if e .po \\nEu
 .ev
-'sp |\\n(TMu
+'sp |\\nTu
 'ns
+.nr fI 0
+.nr sI 0
 .nr mT 1
 ..
 .       \" bottom title
@@ -68,11 +72,10 @@
 .       vs \\n(VS-2p
 .\}
 .ft R
-.if \{\
-.       ie \\n(SD=1 \{\
-.               ie !"\\*(sH"" .tl \\*(tL/\\*(sN \\*(sH%
-.               el            .tl \\*(tL%
-.       \}
+.ie \\n%=1 .tl 
+.el .if \\n(SD=1 \{\
+.       ie !"\\*(sH"" .tl \\*(tL/\\*(sN \\*(sH%
+.       el            .tl \\*(tL%
 .\}
 .ev
 ..
@@ -186,11 +189,11 @@
 \fB\\$1\fP
 .\}
 .fi
-.ll \\n(LLu-10n
+.ll \\nLu-10n
 .in 10n
 ..
 .de AE
-.ll \\n(LLu
+.ll \\nLu
 .in 0
 .nr bY 0
 ..
@@ -348,22 +351,28 @@
 .el .if \\n(fI .sp \\n(FDu
 .nr lN +1
 .nr iN +1
-.nr l\\n(lN 0
-.ie !"\\$1"" .af l\\n(lN \\$1
-.el          .ds l\\n(lN b
 .nr i\\n(iN \\n(.iu
-.ie \\n(lN>1 .in +4n
-.el          .in +3n
+.ie !"\\$1"" \{\
+.       af l\\n(lN \\$1
+.       ie \\n(lN>1 .in +4n
+.       el          .in +3n
+.\}
+.el          \{\
+.       ds l\\n(lN b
+.       ie \\n(lN>1 .in +4n
+.       el          .in +2n
+.\}
 .nr sI 0
 .nr fI 0
 ..
 .       \" list end
 .de LE
 .br
+.rr l\\n(lN
+.rm l\\n(lN
 .in \\n(i\\n(iNu
 .nr lN -1
 .nr iN -1
-.rr l\\n(lN
 ..
 .       \" list item
 .de LI
@@ -381,13 +390,15 @@
 .\}
 .if !"\\$1"" \fB\\$1\fP
 ..
-.       \" initialization
-.nr TM 1i
-.nr BM 1i
-.nr EM \n(.o
-.nr OM \n(.o
+.       \" default page size (ISO A4)
+.if !\nL .nr L 16c
+.if !\nT .nr T 2c
+.if !\nB .nr B 2c
+.if !\nE .nr E 2.5c
+.if !\nO .nr O 2.5c
+.if !\nH .nr H 29.7c
+.       \" other initialization
 .nr FL 5.5i
-.nr LL 6i
 .nr PI 5n
 .nr PS 10
 .nr VS 12

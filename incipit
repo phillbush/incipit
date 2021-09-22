@@ -22,36 +22,18 @@ BEGIN {
 		POINT_SIZE="12"
 		VERTICAL_SIZE="14"
 		PARAGRAPH_DISTANCE=".3v"
-		LINE_SIZE="16c"
-		EVENMARGIN_SIZE="2.5c"
-		ODDMARGIN_SIZE="2.5c"
-		HEADER_SIZE="3c"
-		FOOTER_SIZE="2c"
-		PAGE_HEIGHT="29.7c"
 		type = "mi"
 	} else if (format == "slides" || format == "slides") {
 		DOCUMENT_STYLE="1"
 		POINT_SIZE="28"
 		VERTICAL_SIZE="30"
 		PARAGRAPH_DISTANCE=".3v"
-		LINE_SIZE="9i"
-		EVENMARGIN_SIZE="1i"
-		ODDMARGIN_SIZE="1i"
-		HEADER_SIZE="1i"
-		FOOTER_SIZE="1i"
-		PAGE_HEIGHT="8.5i"
 		type = "mi"
 	} else if (format == "book") {
 		DOCUMENT_STYLE="2"
 		POINT_SIZE="12"
 		VERTICAL_SIZE="14"
 		PARAGRAPH_DISTANCE=".3v"
-		LINE_SIZE="16c"
-		EVENMARGIN_SIZE="2.2c"
-		ODDMARGIN_SIZE="2c"
-		HEADER_SIZE="2.1c"
-		FOOTER_SIZE="2.1c"
-		PAGE_HEIGHT="21.6c"
 		type = "mi"
 	} else if (format == "html") {
 		type = "html"
@@ -103,8 +85,8 @@ BEGIN {
 	markup["mi", "TOPIC", "END"] = "\\fP\\(rq"
 	markup["mi", "PRE", "BEG"] = "\\f(CW"
 	markup["mi", "PRE", "END"] = "\\fP"
-	markup["mi", "META", "BEG"] = "\\f(CW⟨"
-	markup["mi", "META", "END"] = "⟩\\fP"
+	markup["mi", "META", "BEG"] = "\\f(CW\\(aq"
+	markup["mi", "META", "END"] = "\\(aq\\fP"
 	markup["mi", "FIGURE", "BEG"] = ".FS\n"
 	markup["mi", "FIGURE", "END"] = ".FE\n"
 	markup["mi", "ENUMU", "BEG"] = ".LS\n"
@@ -229,16 +211,7 @@ function inittroff() {
 	printf ".ps \\n(PS\n"
 	printf ".nr VS %s\n", VERTICAL_SIZE
 	printf ".vs \\n(VS\n"
-	printf ".nr LL %s\n", LINE_SIZE
-	printf ".ll \\n(LLu\n"
-	printf ".lt \\n(LLu\n"
 	printf ".nr PD %s\n", PARAGRAPH_DISTANCE
-	printf ".nr EM %s\n", EVENMARGIN_SIZE
-	printf ".nr OM %s\n", ODDMARGIN_SIZE
-	printf ".po \\n(OM\n"
-	printf ".nr TM %s\n", HEADER_SIZE
-	printf ".nr BM %s\n", FOOTER_SIZE
-	printf ".pl %s\n", PAGE_HEIGHT
 }
 
 # unget token
