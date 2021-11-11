@@ -71,6 +71,13 @@ macros should be used directly after a
 .BR .TL
 macro.
 .TP
+\&\fB.B\fR ["\fImid\fR"] ["\fIend\fR"] ["\fIbeg\fR"]
+If no argument is given, this macro sets the font to bold for the text that follows,
+until the font be automatically reset in the next paragraph.
+If a single argument is given, it is printed in bold font, without setting the font of the remaining text.
+If two arguments are given, the first is printed in bold font, and the second one is printed after it.
+If three arguments are given, the first is printed in bold font, the second one is printed after it, and the third one is printed before it.
+.TP
 .B .CE
 End a code block started by
 .BR .CS .
@@ -80,6 +87,13 @@ Start a code block.
 Text in a code block are printed in constant width font.
 A code block must be ended with
 .BR .CE .
+.TP
+\&\fB.CW\fR ["\fImid\fR"] ["\fIend\fR"] ["\fIbeg\fR"]
+If no argument is given, this macro sets the font to constant width (monospace) for the text that follows,
+until the font be automatically reset in the next paragraph.
+If a single argument is given, it is printed in constant width font, without setting the font of the remaining text.
+If two arguments are given, the first is printed in constant width font, and the second one is printed after it.
+If three arguments are given, the first is printed in constant width font, the second one is printed after it, and the third one is printed before it.
 .TP
 .B .FC \(dq\fIcaption\fP\(dq [\fItype\fP]
 Specify the caption of a figure and its type.
@@ -125,6 +139,13 @@ can be used between the
 and
 .B .FE
 macros.
+.TP
+\&\fB.I\fR ["\fImid\fR"] ["\fIend\fR"] ["\fIbeg\fR"]
+If no argument is given, this macro sets the font to italic for the text that follows,
+until the font be automatically reset in the next paragraph.
+If a single argument is given, it is printed in italic font, without setting the font of the remaining text.
+If two arguments are given, the first is printed in italic font, and the second one is printed after it.
+If three arguments are given, the first is printed in italic font, the second one is printed after it, and the third one is printed before it.
 .TP
 .B .LE
 End a list started with the
@@ -185,6 +206,13 @@ Start a block quote.
 A block quote must be ended with
 .BR .QE .
 A block quote is indented to the right and begins with a open quotation mark in bold face.
+.TP
+\&\fB.R\fR ["\fImid\fR"] ["\fIend\fR"] ["\fIbeg\fR"]
+If no argument is given, this macro sets the font to roman (regular) for the text that follows,
+until the font be automatically reset in the next paragraph.
+If a single argument is given, it is printed in roman font, without setting the font of the remaining text.
+If two arguments are given, the first is printed in roman font, and the second one is printed after it.
+If three arguments are given, the first is printed in roman font, the second one is printed after it, and the third one is printed before it.
 .TP
 .B .SH level \(dq\fIheading\fP\(dq
 Specify a section heading and its level.
