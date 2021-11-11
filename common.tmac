@@ -1,22 +1,16 @@
-.\" mi: macros for incipit
+.\" common macros
 .       \" begin of document
 .de bG
 .fi
-.ll \\nLu
-.lt \\nLu
+.ll \\n(LLu
+.lt \\n(LLu
 .wh 0 tM
-.wh -\\nBu/2u bT
-.wh -\\nBu bM
+.wh -\\n(MBu/2u bT
+.wh -\\n(MBu bM
 .tM
 .nr iN 0
 .nr bG 1
-.pl \\nH
-..
-.       \" draw horizontal line
-.de HL
-.br
-\l'\\n(.lu-\\n(.iu\&\\$1'
-.br
+.pl \\n(PHu
 ..
 .       \" begin of body
 .de bY
@@ -27,66 +21,23 @@
 ..
 .       \" top margin
 .de tM
-'sp \\nTu/2u
+'sp \\n(MTu/2u
 .ev 1
-.lt \\nLu
-.ie \\n(SD=1 \{\
-.       ps \\n(PS-6
-.       vs \\n(VS-6p
-.\}
-.el \{\
-.       ps \\n(PS-2
-.       vs \\n(VS-2p
-.\}
+.lt \\n(LLu
 .ft R
-.ie \\n%=1 .tl 
-.el .ie \\n(SD=2 \{\
-.        if e \{\
-.                ie !"\\*(cH"" .tl %\\*(cH
-.                el            .tl %\\*(tL
-.        \}
-.        if o \{\
-.                ie !"\\*(sH"" .tl \\*(sH%
-.                el            .tl %
-.        \}
-.\}
-.el .if \\n(SD=0 .tl %
-.if o .po \\nOu
-.if e .po \\nEu
+.tT
+.if o .po \\n(MOu
+.if e .po \\n(MEu
 .ev
-'sp |\\nTu
+'sp |\\n(MTu
 'ns
 .nr fI 0
 .nr sI 0
 .nr mT 1
 ..
-.       \" bottom title
-.de bT
-.ev 1
-.ie \\n(SD=1 \{\
-.       ps \\n(PS-6
-.       vs \\n(VS-6p
-.\}
-.el \{\
-.       ps \\n(PS-2
-.       vs \\n(VS-2p
-.\}
-.ft R
-.ie \\n%=1 .tl 
-.el .if \\n(SD=1 \{\
-.       ie !"\\*(sH"" .tl \\*(tL/\\*(sN \\*(sH%
-.       el            .tl \\*(tL%
-.\}
-.ev
-..
 .       \" bottom margin
 .de bM
 'bp
-..
-.       \" paragraph break
-.de pB
-.ie \\n(SD=1 .bp
-.el .br
 ..
 .       \" reset
 .de rT
@@ -110,58 +61,19 @@
 .if !\\n(bG .bG
 .ce 999
 .ft B
-.ie \\n(SD=1 \{\
-.       ps \\n(PS+10
-.       vs \\n(VS+10p
-.\}
-.el \{\
-.       ps \\n(PS+4
-.       vs \\n(VS+4p
-.\}
+.ps \\n(PS+4
+.vs \\n(VS+4p
 .ne 4
 .hy 0
 .nf
 .ie !"\\$2"" \{\
+\XPDFMark: Title \\$1: \\$2
 \\$1:
 .br
 \\$2
 .\}
 .el \{\
-\\$1
-.\}
-..
-.       \" chapter
-.de CH
-.rm sH
-.ds cH \\$1
-.nr mT 0
-.if \\n%>1       .bp
-.if \\n%>1 .if e .bp
-.nr bY 0
-.nr h0 +1
-.nr h1 0
-.nr h2 0
-.nr h3 0
-.nr h4 0
-.nr h5 0
-.if !\\n(bG .bG
-.fi
-.ad r
-.ft B
-.ps \\n(PS+30
-.vs \\n(VS+30p
-.ne 4
-.hy 0
-\\n(h0
-.br
-.ps \\n(PS+12
-.vs \\n(VS+12p
-.ie !"\\$2"" \{\
-\\$1:
-.br
-\\$2
-.\}
-.el \{\
+\XPDFMark: Title \\$1
 \\$1
 .\}
 ..
@@ -179,24 +91,6 @@
 \\$2
 .\}
 ..
-.       \" abstract begin
-.de AB
-.pB
-.rT
-.sp 2
-.if !"\\$1"" \{\
-.ce 1
-\fB\\$1\fP
-.\}
-.fi
-.ll \\nLu-10n
-.in 10n
-..
-.de AE
-.ll \\nLu
-.in 0
-.nr bY 0
-..
 .       \" paragraph
 .de PP
 .pB
@@ -212,7 +106,7 @@
 .nr sI 0
 .if !"\\$1"" \fB\\$1\fP
 ..
-.       \" SH - section header
+.       \" SH - section heading
 .de SH
 .pB
 .rT
@@ -221,15 +115,7 @@
 .ne 5.1
 .sp 1
 .ft B
-.ie \\n(SD=1 \{\
-.       ps \\n(PS+12
-.       vs \\n(VS+12p
-.       HL
-.\}
-.el \{\
-.       ps \\n(PS+2
-.       vs \\n(VS+2p
-.\}
+.sS
 .nr h\\$1 +1
 .if !\\$1-4 .nr h5 0
 .if !\\$1-3 .nr h4 0
@@ -237,7 +123,6 @@
 .if !\\$1-1 .nr h2 0
 .if !\\$1 .if \\n(.$ .nr h1 1
 .if \\$1S \{\
-.	nr nS \\n(.$-1
 .	nr h1 \\$2 0
 .	nr h2 \\$3 0
 .	nr h3 \\$4 0
@@ -250,9 +135,13 @@
 .if \\n(SS>2 .if \\$1-2 .as sN \\n(h3.
 .if \\n(SS>3 .if \\$1-3 .as sN \\n(h4.
 .if \\n(SS>4 .if \\$1-4 .as sN \\n(h5.
+.ie \\n(h0      .nr sL \\$1
+.el             .nr sL \\$1-1
+\XPDFMark: Bookmark \\n(sL \\*(sN \\$2
 .if \\n(SS \\*(sN
 \\$2
 .nr sI 1
+.nr fI 0
 ..
 .       \" figure start
 .de FS
@@ -333,7 +222,15 @@
 ..
 .       \" quote start
 .de QS
+.mk
 .br
+.ps \\n(PS+6
+.ft B
+“
+.ps
+.ft
+.br
+.rt
 .nr iN +1
 .nr i\\n(iN \\n(.i
 .in +\\n(PIu
@@ -346,6 +243,8 @@
 ..
 .       \" list start
 .de LS
+.rT
+.ft R
 .br
 .ie \\n(sI     .sp 1
 .el .if \\n(fI .sp \\n(FDu
@@ -390,27 +289,15 @@
 .\}
 .if !"\\$1"" \fB\\$1\fP
 ..
-.       \" default page size (ISO A4)
-.if !\nL .nr L 16c
-.if !\nT .nr T 2c
-.if !\nB .nr B 2c
-.if !\nE .nr E 2.5c
-.if !\nO .nr O 2.5c
-.if !\nH .nr H 29.7c
-.       \" other initialization
-.nr FL 5.5i
-.nr PI 5n
-.nr PS 10
-.nr VS 12
-.nr SD 0
-.nr SP 1
-.nr SS 4
 .nr fN 0
 .nr tN 0
+.nr FL 5.5i
+.nr PD .3v
+.nr SP 2
+.nr SS 3
 .if n .nr PD 1v
 .if t .nr PD .3v
 .if n .nr FD 1v
 .if t .nr FD 1v
-.ds C Chapter
-.ds F Figure
-.ds T Table
+.if "\*F"" .ds F Figure
+.if "\*T"" .ds T Table

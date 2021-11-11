@@ -1,57 +1,80 @@
+# installation paths
 PREFIX = /usr/local
 MANPREFIX = ${PREFIX}/share/man
 TMACPREFIX = ${PREFIX}/share/tmac
 
-# target file: README.pdf or README.html
+# generated files
 DOC = README.pdf
+TMACS = tmac.p tmac.t
+PROGS = i2html i2roff
 
-# configuration for a4 papersize (used for technical papers)
-FORMAT = paper
+# configuration for A4 papersize (used for technical papers)
+MACRO = mt
 PAPERSIZE = a4
 ORIENTATION = portrait
-TFLAGS = -rH29.7c -rL16c -rT3c -rB2c -rE2.5c -rO2.5c
 
 # configuration for landscape letter papersize (used for slides)
-#FORMAT = slides
+#MACRO = mp
 #PAPERSIZE = letter
 #ORIENTATION = landscape
-#TFLAGS = -rH8.5i -rL9i -rT1i -rB1i -rE1i -rO1i
 
 # configuration for halfletter papersize (used for books)
-#FORMAT = book
+#MACRO = mb
 #PAPERSIZE = halfletter
 #ORIENTATION = portrait
-#TFLAGS = -rH21.6c -rL13.6c -rT2.1c -rB2.1c -rE2c -rO2c
 
-.SUFFIXES: .txt .pdf .ps .mi .html
+.SUFFIXES: .txt .pdf .ps .roff .html
 
-all: ${DOC}
+all: ${TMACS} ${PROGS}
+
+doc: ${DOC}
 
 .ps.pdf:
 	ps2pdf "-sPAPERSIZE=${PAPERSIZE}" $< $@
 
-.mi.ps:
-	<$< pic | tbl | eqn | troff ${TFLAGS} -mi -mpictures - | dpost -p"${ORIENTATION}" >$@
+.roff.ps:
+	<$< pic | tbl | eqn | troff -${MACRO} -mpictures - | dpost -p"${ORIENTATION}" >$@
 
-.txt.mi:
-	./incipit -- -T ${FORMAT} $< >$@
+.txt.roff:
+	i2roff $< >$@
 
 .txt.html:
-	./incipit -- -T html $< >$@
+	i2html $< >$@
 
-install:
-	install -D -m 755 incipit ${DESTDIR}${PREFIX}/bin/incipit
-	install -D -m 644 incipit.1 ${DESTDIR}${MANPREFIX}/man1/incipit.1
-	install -D -m 644 mi.7 ${DESTDIR}${MANPREFIX}/man7/mi.7
-	install -D -m 644 mi.tmac ${DESTDIR}${TMACPREFIX}/tmac.i
+i2roff: incipit
+	cp incipit i2roff
+	chmod +x i2html
+
+i2html: incipit
+	sed '4s/mi/html/' incipit > i2html
+	chmod +x i2html
+
+tmac.b: common.tmac mb.tmac
+	cat common.tmac mb.tmac > tmac.b
+
+tmac.t: common.tmac mt.tmac
+	cat common.tmac mt.tmac > tmac.t
+
+tmac.p: common.tmac mp.tmac
+	cat common.tmac mp.tmac > tmac.p
+
+install: all
+	install -D -m 755 i2roff ${DESTDIR}${PREFIX}/bin/i2roff
+	install -D -m 755 i2html ${DESTDIR}${PREFIX}/bin/i2html
+	install -D -m 644 mp.7 ${DESTDIR}${MANPREFIX}/man7/mp.7
+	install -D -m 644 mt.7 ${DESTDIR}${MANPREFIX}/man7/mt.7
+	install -D -m 644 tmac.p ${DESTDIR}${TMACPREFIX}/tmac.p
+	install -D -m 644 tmac.t ${DESTDIR}${TMACPREFIX}/tmac.t
 
 uninstall:
-	rm -f ${DESTDIR}${PREFIX}/bin/incipit
-	rm -f ${DESTDIR}${MANPREFIX}/man1/incipit.1
-	rm -f ${DESTDIR}${MANPREFIX}/man7/mi.7
-	rm -f ${DESTDIR}${TMACPREFIX}/tmac.i
+	rm -f ${DESTDIR}${PREFIX}/bin/i2roff
+	rm -f ${DESTDIR}${PREFIX}/bin/i2html
+	rm -f ${DESTDIR}${MANPREFIX}/man7/mp.7
+	rm -f ${DESTDIR}${MANPREFIX}/man7/mt.7
+	rm -f ${DESTDIR}${TMACPREFIX}/tmac.p
+	rm -f ${DESTDIR}${TMACPREFIX}/tmac.t
 
 clean:
-	-rm ${DOC} ${DOC:.pdf=.ps} ${DOC:.pdf=.mi}
+	-rm ${PROGS} ${TMACS} ${DOC} ${DOC:.pdf=.ps} ${DOC:.pdf=.roff}
 
 .PHONY: all install uninstalll clean

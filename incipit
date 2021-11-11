@@ -3,45 +3,7 @@
 # set constants and call the parser
 BEGIN {
 	type = "mi"
-	format = "paper"
 
-	for (i = 1; substr(ARGV[i], 1, 1) == "-" && i < ARGC; i++) {
-		if (substr(ARGV[i], 2, 1) == "T") {
-			ARGV[i] = ""
-			if ((format = substr(ARGV[i], 3)) == "") {
-				format = ARGV[++i]
-				ARGV[i] = ""
-			}
-		} else {
-			usage()
-		}
-	}
-
-	if (format == "paper") {
-		DOCUMENT_STYLE="0"
-		POINT_SIZE="12"
-		VERTICAL_SIZE="14"
-		PARAGRAPH_DISTANCE=".3v"
-		type = "mi"
-	} else if (format == "slides" || format == "slides") {
-		DOCUMENT_STYLE="1"
-		POINT_SIZE="28"
-		VERTICAL_SIZE="30"
-		PARAGRAPH_DISTANCE=".3v"
-		type = "mi"
-	} else if (format == "book") {
-		DOCUMENT_STYLE="2"
-		POINT_SIZE="12"
-		VERTICAL_SIZE="14"
-		PARAGRAPH_DISTANCE=".3v"
-		type = "mi"
-	} else if (format == "html") {
-		type = "html"
-	} else {
-		err("unknown format \"" format "\"")
-	}
-	if (type == "")
-		type = "mi"
 	if (type == "html")
 		html = 1
 	else
@@ -136,13 +98,13 @@ BEGIN {
 	markup["html", "ABSTRACT", "END"] = "</p>\n"
 	markup["html", "PARAGRAPH", "BEG"] = "<p>"
 	markup["html", "PARATITLE", "BEG"] = "<strong>"
-	markup["html", "PARATITLE", "END"] = "</strong>"
+	markup["html", "PARATITLE", "END"] = "</strong> "
 	markup["html", "PARAGRAPH", "MID"] = ""
 	markup["html", "PARAGRAPH", "END"] = "</p>\n"
 	markup["html", "SECTION", "BEG"] = "<h%d id=\"%s\">"
 	markup["html", "SECTION", "END"] = "</h%d>\n"
-	markup["html", "CODE", "BEG"] = "<figure><pre><code>"
-	markup["html", "CODE", "END"] = "</figure></pre></code>\n"
+	markup["html", "CODE", "BEG"] = "<pre><code>"
+	markup["html", "CODE", "END"] = "</pre></code>\n"
 	markup["html", "EMPHASIS", "BEG"] = "<em>"
 	markup["html", "EMPHASIS", "END"] = "</em>"
 	markup["html", "TOPIC", "BEG"] = "“<em>"
@@ -158,11 +120,16 @@ BEGIN {
 	markup["html", "ITEM", "BEG"] = "<li>"
 	markup["html", "COLON", "BEG"] = "<strong>"
 	markup["html", "COLON", "END"] = "</strong>"
+	markup["html", "FIGURE", "BEG"] = "<figure>"
+	markup["html", "FIGURE", "END"] = "</figure>\n"
 	markup["html", "ITEM", "MID"] = ""
 	markup["html", "ITEM", "END"] = "</li>\n"
-	markup["html", "IMAGE", "BEG"] = "<figure>"
+	markup["html", "VIDEO", "BEG"] = ""
+	markup["html", "VIDEO", "MID"] = "<video controls=\"\"><source src=\"%s\"></video>"
+	markup["html", "VIDEO", "END"] = ""
+	markup["html", "IMAGE", "BEG"] = ""
 	markup["html", "IMAGE", "MID"] = "<img src=\"%s\" alt=\"%s\">"
-	markup["html", "IMAGE", "END"] = "</figure>\n"
+	markup["html", "IMAGE", "END"] = ""
 	markup["html", "CAPTION", "MID"] = "<figcaption>%s</figcaption>\n"
 	markup["html", "TABLE", "BEG"] = "<table>"
 	markup["html", "TABLE", "END"] = "</table>\n"
@@ -178,17 +145,13 @@ BEGIN {
 	markup["html", "ROW", "END"] = "</tr>\n"
 	markup["html", "QUOTE", "BEG"] = "<blockquote>"
 	markup["html", "QUOTE", "END"] = "</blockquote>\n"
+	markup["html", "LINK", "BEG"] = "<a href=\""
+	markup["html", "LINK", "MID"] = "\">"
+	markup["html", "LINK", "END"] = "</a>"
 
 	if (troff)
 		inittroff()
 	document()
-}
-
-# show usage and exit
-function usage() {
-	print "usage: incipit -- [-T format] file..."
-	error = 1
-	exit error
 }
 
 # print error and exit
@@ -204,14 +167,6 @@ function inittroff() {
 	printf ".fp 2 I LinLibertine_RI ttf\n"
 	printf ".fp 3 B LinLibertine_RB ttf\n"
 	printf ".fp 4 V LinLibertine_R ttf\n"
-	printf ".nr SP 2\n"
-	printf ".nr SS 3\n"
-	printf ".nr SD %s\n", DOCUMENT_STYLE
-	printf ".nr PS %s\n", POINT_SIZE
-	printf ".ps \\n(PS\n"
-	printf ".nr VS %s\n", VERTICAL_SIZE
-	printf ".vs \\n(VS\n"
-	printf ".nr PD %s\n", PARAGRAPH_DISTANCE
 }
 
 # unget token
@@ -239,7 +194,7 @@ function gettok(    a, n) {
 				toktype = BLANK
 				tok = line
 				line = ""
-			} else if (match(line, /^\t*• *(\([^)]+\))? *([^:]+:)?/)) {
+			} else if (match(line, /^\t*• *(\([^)]+\))? *([^:]+: +)?/)) {
 				toktype = ENUMMARK
 				tok = substr(line, RSTART, RLENGTH)
 				line = substr(line, RSTART + RLENGTH)
@@ -294,7 +249,7 @@ function printcode(s) {
 		gsub(/"/, "\\(dq", s)
 		gsub(/'/, "\\(aq", s)
 		gsub(/`/, "\\(ga", s)
-		gsub(/-/, "\\-", s)
+		gsub(/-/, "\\(hy", s)
 		sub(/^\./, "\\\\\\&&", s)
 	} else if (html) {
 		gsub(/&/, "\\&amp;", s)
@@ -311,8 +266,8 @@ function escape(s) {
 		gsub(/\\/, "\\e", s)
 		gsub(/"/, "\\(dq", s)
 		gsub(/'/, "\\(aq", s)
-		gsub(/-/, "\\-", s)
-		sub(/^\./, "\\\\\\&&", s)
+		gsub(/-/, "\\(hy", s)
+		sub(/\./, "\\\\\\&&", s)
 	} else if (html) {
 		gsub(/&/, "\\&amp;", s)
 		gsub(/</, "\\&lt;", s)
@@ -336,6 +291,32 @@ function printnormal(s) {
 	if (troff)
 		gsub(/`/, "\\(ga", s)
 	printf "%s", escape(s)
+}
+
+# expand html hyperlinks
+function hyperlink(after,    before, punct, mid, puncttype) {
+	if (html) {
+		while (match(after, /«|»/)) {
+			mid = substr(after, 1, RSTART - 1)
+			punct = substr(after, RSTART, RLENGTH)
+			after = substr(after, RSTART + RLENGTH)
+			if (puncttype) {
+				if (match(mid, / *-- */)) {
+					mid = substr(mid, RSTART + RLENGTH) markup[type, "LINK", "MID"] substr(mid, 1, RSTART - 1)
+					before = before mid markup[type, "LINK", "END"]
+				} else {
+					before = before mid markup[type, "LINK", "MID"] mid markup[type, "LINK", "END"]
+				}
+				puncttype = ""
+			} else if (punct == "«") {
+				before = before mid markup[type, "LINK", "BEG"]
+				puncttype = punct
+			} else {
+				before = before mid
+			}
+		}
+	}
+	return before after
 }
 
 # do inline punctuation expansion text
@@ -386,6 +367,7 @@ function printmarkup(s) {
 	sub(/^[ \t]+/, "", s)
 	gsub(/[ \t]+/, " ", s)
 	s = escape(s)
+	s = hyperlink(s)
 	printf "%s", expandpunct(s)
 }
 
@@ -400,6 +382,7 @@ function title(    id, s) {
 		if (gettok() > 0) {
 			if (toktype == NONE) {
 				printf markup[type, "SUBTITLE", "BEG"]
+				sub(/.$/, "", tok)
 				printmarkup(tok)
 				printf markup[type, "SUBTITLE", "END"]
 			} else {
@@ -412,34 +395,25 @@ function title(    id, s) {
 
 # parse document incipit (author)
 function author(    ret, inst) {
-	while (!eof && toktype == NONE) {
-		ret = 0
-		if (match(tok, /\. */))
-			ret = 1
-		inst = ""
-		sub(/[.;] *$/, "", tok)
-		if (match(tok, / *\(.*\)$/)) {
-			inst = substr(tok, RSTART, RLENGTH - 1)
-			sub(/^ *\(/, "", inst)
-			tok = substr(tok, 1, RSTART - 1)
-		}
-		printf markup[type, "AUTHOR", "BEG"]
-		printf markup[type, "AUTHOR1", "BEG"]
-		printmarkup(tok)
-		printf markup[type, "AUTHOR1", "END"]
-		if (inst) {
-			printf markup[type, "AUTHOR2", "BEG"]
-			printmarkup(inst)
-			printf markup[type, "AUTHOR2", "END"]
-		}
-		printf markup[type, "AUTHOR", "END"]
-		if (inst)
-		gettok()
-		if (ret) {
-			break
+	printf markup[type, "AUTHOR", "BEG"], genid(tok)
+	s = substr(tok, length(tok), 1) == ":"
+	if (troff)
+		sub(/:$/, "", tok)
+	printf markup[type, "AUTHOR1", "BEG"]
+	printnormal(tok)
+	printf markup[type, "AUTHOR1", "END"]
+	if (s) {
+		if (gettok() > 0) {
+			if (toktype == NONE) {
+				printf markup[type, "AUTHOR2", "BEG"]
+				printmarkup(tok)
+				printf markup[type, "AUTHOR2", "END"]
+			} else {
+				ungettok()
+			}
 		}
 	}
-	ungettok()
+	printf markup[type, "AUTHOR", "END"]
 }
 
 # parse abstract (part of document incipit)
@@ -459,13 +433,8 @@ function docincipit(    n) {
 	while (!eof && toktype == NONE) {
 		if (n == 0) {
 			title()
-		} else if (n == 1) {
-			author()
-		} else if (n == 2) {
-			abstract()
 		} else {
-			ungettok()
-			return
+			author()
 		}
 		gettok()
 		n++
@@ -544,6 +513,30 @@ function image(    ret, fig, caption) {
 	printf "%s", markup[type, "FIGURE", "END"]
 }
 
+# parse video figure
+function video(    ret, fig, caption) {
+	printf "%s", markup[type, "FIGURE", "BEG"]
+	printf "%s", markup[type, "VIDEO", "BEG"]
+	sub(/^VIDEO:[ \t]*/, "", tok)
+	sub(/[ \t]*{$/, "", tok)
+	caption = tok
+	while ((ret = (getline)) == 1) {
+		if ($0 ~ /^}[ \t]*$/)
+			break
+		sub(/^[ \t]+/, "")
+		sub(/[ \t]+$/, "")
+		printf markup[type, "VIDEO", "MID"], $0, caption
+	}
+	if (ret != 1) {
+		eof = 1
+	}
+	printf "%s", markup[type, "VIDEO", "END"]
+	if (caption != "") {
+		printf markup[type, "CAPTION", "MID"], caption, "f"
+	}
+	printf "%s", markup[type, "FIGURE", "END"]
+}
+
 # parse pic figure
 function pic(    ret, caption) {
 	printf "%s", markup[type, "FIGURE", "BEG"]
@@ -597,6 +590,8 @@ function figure() {
 	line = ""
 	if (tok ~ /^IMAGE:[ \t]+/) {
 		image()
+	} else if (tok ~ /^VIDEO:[ \t]+/) {
+		video()
 	} else if (tok ~ /^PIC:/) {
 		pic()
 	} else if (tok ~ /^EQN:/) {
@@ -624,7 +619,7 @@ function enumeration(    enum, lvl, enumlvl, label, colon) {
 				tok = substr(tok, RSTART + RLENGTH)
 				sub(/^ +/, "", tok)
 			}
-			if (match(tok, /^.+:/)) {
+			if (match(tok, /^.+: +/)) {
 				colon = substr(tok, RSTART, RLENGTH)
 			}
 			while (enumlvl > lvl) {

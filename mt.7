@@ -1,37 +1,37 @@
-.TH MI 7
+.ds mn mt
+.TH MT 7
 .SH NAME
-mi \- macros for papers, books and presentations
+\*(mn \- macros for technical papers
 .SH SYNOPSIS
 .B troff
-.B \-mi
+.B \-\*(mn
 .RI [ options ]
 .IR file ...
 .SH DESCRIPTION
 The
-.B mi
-macro package for troff provides macros for formatting technical papers, books and presentations.
+.B \*(mn
+troff macro package provides macros for formatting technical papers.
+.PP
+The content of a document processed by troff with the
+.B \*(mn
+macro package fits, by default, an ISO A4 paper.
+When using the
+.B \*(mn
+macro package,
+options to set the page size to ISO A4 must be passed to
+the post-processors that convert the output of troff to postscript or pdf.
 .PP
 In a
-.B mi
+.B \*(mn
 document, lines beginning with the control character '.' are called "macro lines".
 It usually consists of two capital letters.
-The words forllowing the macro names are arguments to the macro.
-.PP
-Instead of following
-.IR ms (7)
-approach of using different macros for different styles of paragraphs (.PP, .LP, .IP, etc)
-or different styles of section headings (.SH and .NH),
-.B mi
-follows
-.IR mm (7)
-approach and uses a single macro for each text unity,
-and the style must be specified as a number register.
+The words following the macro names are arguments to the macro.
 .SH MACROS
 The
-.B mi
+.B \*(mn
 macro package uses macros to format the document.
 All macros in
-.B mi
+.B \*(mn
 that are exposed to the user consist of two uppercase letters.
 .PP
 Known macros are listed below.
@@ -50,7 +50,6 @@ The
 .B .AB
 macro should be used directly after a
 .BR .TL ,
-.BR .CH ,
 or
 .B .AU
 macros
@@ -69,29 +68,16 @@ macros can be used.
 The
 .B .AU
 macros should be used directly after a
-.BR .TL ,
-or
-.B .CH
-macros.
+.BR .TL
+macro.
 .TP
 .B .CE
 End a code block started by
 .BR .CS .
 .TP
-.B .CH \(dq\fItitle\fP\(dq [\(dq\fIsubtitle\fP\(dq]
-Begin a new chapter.
-The first argument defines the chapter title.
-The second argument is optional and defines the chapter subtitle.
-If a subtitle is supplied, it is printed in a line below the title, and the title ends in a colon.
-If no subtitle is supplied, the title does not end in a colon.
-This macro also sets the
-.B .cH
-internal string to the title.
-The title is printed adjusted to the right,
-in bold and ten points larger than the regular paragraph size.
-.TP
 .B .CS
 Start a code block.
+Text in a code block are printed in constant width font.
 A code block must be ended with
 .BR .CE .
 .TP
@@ -106,11 +92,11 @@ and
 When this macro is used, the internal counter that counts figures
 (or the internal counter that counts tables)
 is incremented.
-Then the it is printed the string
+Then the string
 .B Figure N: CAPTION
 (or
-.BR "Table N: CAPTION" ),
-where
+.BR "Table N: CAPTION" )
+is printed, where
 .B N
 is the value of the counter of figures (or tables),
 and
@@ -129,8 +115,16 @@ End a figure started by
 .TP
 .B .FS
 Start a figure.
-A figure must be ended with
-.BR .FS .
+A figure must be ended with the
+.B .FS
+macro.
+A figure caption macro
+.B .FC
+can be used between the
+.B .FS
+and
+.B .FE
+macros.
 .TP
 .B .LE
 End a list started with the
@@ -150,9 +144,9 @@ must be ended with the
 macro.
 The
 .I type
-argument must be
+argument can be
 .B \(dqb\(dq
-for a bulleted list,
+for a bulleted list (the default),
 .B \(dq1\(dq
 for a numbered list,
 .B \(dqi\(dq
@@ -167,7 +161,7 @@ for an ordered list with uppercase letters.
 .B .PP \(dq\fItitle\fP\(dq
 Begin a paragraph.
 If an argument is provided,
-it is used as the title of the paragraph and is printed in bold before first line of the paragraph.
+it is used as the title of the paragraph and is printed in bold before the first line of the paragraph.
 A paragraph may have its first line indented depending of the value of the
 .B SP
 (paragraph style) macro.
@@ -190,11 +184,12 @@ End a block quote started by
 Start a block quote.
 A block quote must be ended with
 .BR .QE .
+A block quote is indented to the right and begins with a open quotation mark in bold face.
 .TP
 .B .SH level \(dq\fIheading\fP\(dq
 Specify a section heading and its level.
 The first argument defines the level of the section heading.
-the second argument is the heading itself.
+The second argument is the heading itself.
 The section heading is printed in bold and two points larger than the regular paragraph size.
 If the level is less or equal than the number register
 .BR SS ,
@@ -224,8 +219,11 @@ Called at the end of every page via a trap to set the bottom margin of the page.
 .B .bY
 Called at the beginning of the document body by paragraph and section macros.
 .TP
+.B .fC
+Diversion used for figure captions.
+.TP
 .B .fG
-Diversion used for figures
+Diversion used for figures.
 .TP
 .B .pB
 Called at the beginning of every paragraph to set vertical space.
@@ -233,43 +231,24 @@ Called at the beginning of every paragraph to set vertical space.
 .B .rT
 Called at the beginning of every paragraph to reset the text formatting.
 .TP
-.B .tI
-Called at the end of every page via a trap to print the top title (header) and bottom title (footer).
+.B .sS
+Called at the beginning of every section to set the section point size.
+.TP
+.B .tT
+Called at the beginning of every page via a trap to print the top title (header).
 .TP
 .B .tM
-Called at the beginning of every page via a trap to set the top and left margins of the page,
-and to print the top title (header).
+Called at the beginning of every page via a trap to set the top and left margins of the page.
 .SH NUMBER REGISTERS
 The
-.B mi
+.B \*(mn
 macro package uses number registers to control the formatting of the document.
 Number registers can be set at the top of a document using the
 .B .nr
 troff request.
-.PP
-Known number registers that define the page size are listed below.
-They consist of a single uppercase letter and defaults to the size of an ISO A4 page.
-.TP
-.B B
-Bottom margin for both odd and even pages (default: 2cm).
-.TP
-.B E
-Left margin for even pages (defualt: 2.5cm).
-.TP
-.B H
-Page height (default: 29.7cm).
-.TP
-.B L
-Line length (default: 16cm).
-.TP
-.B O
-Left margin for odd pages (default: 2.5cm).
-.TP
-.B T
-Top margin for both odd and even pages (default: 3cm).
-.PP
-Other known number registers are listed below.
-The consist of two uppercase letters.
+All number registers in
+.B \*(mn
+that are exposed for the user to set consist of two uppercase letters.
 .TP
 .B FD
 Figure spacing (distance).
@@ -277,21 +256,32 @@ Figure spacing (distance).
 .B FL
 Footnote length
 .TP
+.B LL
+Line length (default 16cm).
+.TP
+.B MB
+Bottom margin for both odd and even pages (default: 2cm).
+.TP
+.B ME
+Left margin for even pages (default: 2.5cm).
+.TP
+.B MO
+Left margin for odd pages (default: 2.5cm).
+.TP
+.B MT
+Top margin for both odd and even pages (default: 3cm).
+.TP
 .B PD
 Paragraph spacing (distance).
+.TP
+.B PH
+Page height (default: 29.7cm).
 .TP
 .B PI
 Paragraph indent.
 .TP
 .B PS
 Point size (default 10 points).
-.TP
-.B SD
-Document style:
-0 for technical paper,
-1 for book,
-2 for presentation (slides).
-(default 0).
 .TP
 .B SP
 Paragraph style:
@@ -328,6 +318,11 @@ Set to 1 when the macro
 .B .bY
 is run.
 .TP
+.B fC
+Figure level counter.
+When a figure begins, this number register is incremented.
+When a figure ends, this number register is decremented.
+.TP
 .B fI
 Set to 1 at the end of a figure; reset at the beginning of a paragraph.
 .TP
@@ -339,9 +334,6 @@ is called with the argument of
 .B f
 (or with no argument), this counter is incremented.
 .TP
-.B h0
-The number of the current chapter.
-.TP
 .BR h1 " to " h5
 The number of the current sections of level 1 to 5.
 .TP
@@ -351,24 +343,36 @@ The current indent level.
 .B i1 " to " i9
 The previous saved indentation for each indent level.
 .TP
+.B lN
+List level counter.
+Each time the list start macro
+.RB ( .LS )
+is called, this counter is incremented.
+Each time the list end macro
+.RB ( .LE )
+is called, this counter is decremented.
+.TP
 .B mT
-Set to 0 on title and chapter pages, set to 1 otherwise.
+Set to 0 on title page, set to 1 otherwise.
 This number register is used to avoid printing header titles and footer titles on the page.
 .TP
 .B sI
 Set to 1 when a section is processed;
 reset at the beginning of a paragraph.
 .TP
+.B sL
+The current section level counter.
+.TP
 .B tN
 Table counter.
 Each time the figure caption macro
 .RB ( .FC )
 is called with the argument of 
-.Br t ,
+.BR t ,
 this counter is incremented.
 .SH STRINGS
 The
-.B mi
+.B \*(mn
 macro package uses some strings as constants.
 These strings are by default in the English language,
 and should be redefined to match the document language.
@@ -377,9 +381,6 @@ Strings can be set at the top of a document using the
 troff request.
 .PP
 Known strings are listed below.
-.TP
-.B C
-Chapter
 .TP
 .B F
 Figure
@@ -391,20 +392,13 @@ There are also some strings that are used internaly,
 and therefore should not be overwritten.
 Internal strings are listed below.
 .TP
-.B cH
-This string contains the title of the current chapter.
-It is used in the header of the page in some formats of documents.
-.TP
 .B sH
 This string contains the name of the last numbered section heading.
 It is used in the header of the page in some formats of documents.
 .TP
 .B sN
 This string contains the number prefix of the section heading.
-.TP
-.B tL
-This string contains the title of the document.
-It is used in the header of the page in some formats of documents.
 .SH SEE ALSO
-.IR troff (1),
-.IR ms (7)
+.IR mb (7),
+.IR mp (7),
+.IR troff (1)

@@ -1,0 +1,48 @@
+.\" mt: macros for technical papers
+.       \" top title
+.de tT
+.ps \\n(PS-2
+.vs \\n(VS-2p
+.ie \\n%=1 .tl 
+.el        .tl %
+..
+.       \" paragraph break
+.de pB
+.br
+..
+.       \" setup section
+.de sS
+.ps \\n(PS+2
+.vs \\n(VS+2p
+..
+.       \" abstract begin
+.de AB
+.pB
+.rT
+.sp 2
+.if !"\\$1"" \{\
+.ce 1
+\fB\\$1\fP
+.\}
+.fi
+.ll \\n(LLu-10n
+.in 10n
+..
+.       \" abstract end
+.de AE
+.ll \\n(LLu
+.in 0
+.nr bY 0
+..
+.       \" initialization
+.nr PI 5n
+.nr PS 12
+.nr VS 14
+.       \" default page size (ISO A4)
+.if !\n(LL .nr LL 16c   \" line length
+.if !\n(MB .nr MB 2c    \" bottom margin
+.if !\n(ME .nr ME 2.5c  \" left margin for even pages
+.if !\n(MO .nr MO 2.5c  \" left margin for odd pages
+.if !\n(MT .nr MT 2c    \" top margin
+.if !\n(PH .nr PH 29.7c \" page height
+\" there's no page width, it's not needed for troff

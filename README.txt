@@ -4,8 +4,7 @@
 
 The ‘Incipit Markup Language’ (or ‘Incipit’, for short) is a plain text
 markup language that uses Unicode characters and the structure of the
-text itself to format documents.  ‘Incipit’ is also the name of a script
-that converts ‘Incipit’ documents to html or troff.
+text itself to format documents.
 
 In the ‘Incipit Markup Language’, a paragraph is a block of text
 delimited by blank lines.  A paragraph may be preceded by a section
@@ -349,43 +348,40 @@ text with emphasis should be written in all caps.
 
 § Conversion
 
-The `incipit(1)` awk script converts a text written in Incipit to HTML
-or to the `mi(7)` `troff(1)` macro package.
+The `i2roff(1)` and `i2html` awk scripts convert a text written in
+Incipit to pdf (using the `mt(7)` or `mp(7)` troff macro packages),
+or to HTML formats.
 
-Converting an Incipit text to HTML is simple, just use the `incipit(1)`
-script to read the text file, pass it the `-T html` option as argument,
-and the converted document is printed to standard output.  Since it is
-an `awk(1)` script, remember to pass two hyphens as argument first.
-
-{
-	incipit -- -T html <file.txt >file.html
-}
-
-Converting an Incipit text to PDF is more comples.  First, the text must
-be converted to `mi(7)`, a `troff(1)` macro package used only for
-converting Incipit text to pdf.  There are three possible formats types
-that must be supplied with the `-T` option: `paper` (for technical
-papers), `slides` (for slides presentation) or `book` (for books).
-If no argument is provided, use `paper` as default.
+Converting an Incipit text to HTML is simple, just use the `i2html(1)`
+script to read the text file, and the converted document is printed to
+standard output.
 
 {
-	incipit -- -T paper <file.txt >file.mi
+	i2html <file.txt >file.html
 }
 
-Then, we need to convert the `.mi` file to a `.ps` (postscript) file,
+Converting an Incipit text to PDF is more complex.  First, the text must
+be converted to `mt(7)` or `mp(7)`, which are `troff(1)` macro
+packages.
+
+{
+	i2roff <file.txt >file.roff
+}
+
+Then, we need to convert the `.roff` file to a `.ps` (postscript) file,
 this is done with a series of commands in a pipeline.  Those commands
 depend on the troff system and vary between Groff, Heirloom Doctools,
-etc.  Using Heirloom Doctools, the command is the following to generate
-a portrait document (to generate a landscape document, used for slides,
-replace `portrait` with `landscape` in the command below).  The `-r*`
-options specify the size of the paper for troff, see `mi(7)` and
-`troff(1)` for more information.
+etc.  We need to chose one of the macro packages: `mt(7)` if we are
+formatting a A4 paper, or `mp(7)` if we are formatting a slide
+presentation in landscape letter paper.  Using Heirloom Doctools, the
+command is the following to generate a portrait document (to generate a
+landscape document, used for slides, replace `portrait` with `landscape`
+in the command below).
 
 {
-	<file.mi pic |\
+	<file.roff pic |\
 	tbl |\
-	troff -rH29.7c -rL16c -rT3c -rB2c -rE2.5c -rO2.5c \
-	-mi -mpictures - |\
+	troff -mt -mpictures |\
 	dpost -pportrait >file.ps
 }
 
@@ -398,6 +394,5 @@ papersize, which can be `a4`, `letter`, `halfletter`, etc.
 }
 
 A Makefile automatizing the conversion process is distributed with
-Incipit.  For more information on the script, a manual for it is also
-provided.  For more information on the `mi(7)` macro package, a manual
-for it is provided as well.
+Incipit.  For more information on the `mt(7)` and `mp(7)` macro
+packages, manuals for them are distributed as well.

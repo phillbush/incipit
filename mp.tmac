@@ -1,0 +1,28 @@
+.\" mt: macros for technical papers
+.       \" top margin
+.de tT
+..
+.       \" paragraph break
+.de pB
+.bp
+..
+.       \" setup section
+.de sS
+.ps \\n(PS+12
+.vs \\n(VS+12p
+.br
+\l'\\n(.lu-\\n(.iu\&\\$1'
+.br
+..
+.       \" initialization
+.nr PI 0
+.nr PS 28
+.nr VS 30
+.       \" default page size (landscape letter)
+.if !\n(LL .nr LL 9i    \" line length
+.if !\n(MB .nr MB 1i    \" bottom margin
+.if !\n(ME .nr ME 1i    \" left margin for even pages
+.if !\n(MO .nr MO 1i    \" left margin for odd pages
+.if !\n(MT .nr MT 1i    \" top margin
+.if !\n(PH .nr PH 8.5i  \" page height
+\" there's no page width, it's not needed for troff

@@ -1,0 +1,362 @@
+.ds mn mp
+.TH MP 7
+.SH NAME
+\*(mn \- macros for slide presentations
+.SH SYNOPSIS
+.B troff
+.B \-\*(mn
+.RI [ options ]
+.IR file ...
+.SH DESCRIPTION
+The
+.B \*(mn
+troff macro package provides macros for formatting slide presentations.
+.PP
+The content of a document processed by troff with the
+.B \*(mn
+macro package fits, by default, a landscape US letter paper.
+When using the
+.B \*(mn
+macro package,
+options to set the page size to landscape US letter paper must be passed to
+the post-processors that convert the output of troff to postscript or pdf.
+.PP
+In a
+.B \*(mn
+document, lines beginning with the control character '.' are called "macro lines".
+It usually consists of two capital letters.
+The words following the macro names are arguments to the macro.
+.SH MACROS
+The
+.B \*(mn
+macro package uses macros to format the document.
+All macros in
+.B \*(mn
+that are exposed to the user consist of two uppercase letters.
+.PP
+Known macros are listed below.
+.TP
+.B .AU \(dq\fIauthor\fP\(dq [\(dq\fIinstitution\fP\(dq]
+Specify an author of the document and the institution of this author.
+The institution, if supplied, is printed in a line below the author.
+More than one
+.B .AU
+macros can be used.
+The
+.B .AU
+macros should be used directly after a
+.BR .TL
+macro.
+.TP
+.B .CE
+End a code block started by
+.BR .CS .
+.TP
+.B .CS
+Start a code block.
+Text in a code block are printed in constant width font.
+A code block must be ended with
+.BR .CE .
+.TP
+.B .FC \(dq\fIcaption\fP\(dq [\fItype\fP]
+Specify the caption of a figure and its type.
+Two types of captions are known:
+.B f
+(for regular figures)
+and
+.B t
+(for tables).
+When this macro is used, the internal counter that counts figures
+(or the internal counter that counts tables)
+is incremented.
+Then the string
+.B Figure N: CAPTION
+(or
+.BR "Table N: CAPTION" )
+is printed, where
+.B N
+is the value of the counter of figures (or tables),
+and
+.B CAPTION
+is the provided caption.
+The strings \(dqFigure\(dq and \(dqTable\(dq
+are actually the values of the strings
+.B F
+and
+.B T
+respectively.
+.TP
+.B .FE
+End a figure started by
+.BR .FS .
+.TP
+.B .FS
+Start a figure.
+A figure must be ended with the
+.B .FS
+macro.
+A figure caption macro
+.B .FC
+can be used between the
+.B .FS
+and
+.B .FE
+macros.
+.TP
+.B .LE
+End a list started with the
+.B .LS
+macro.
+.TP
+.B .LI
+Begin a list item.
+What follows is the list item.
+.TP
+.B .LS [\(dq\fItype\fP\(dq]
+Start a list.
+A list started with
+.B .LS
+must be ended with the
+.B .LE
+macro.
+The
+.I type
+argument can be
+.B \(dqb\(dq
+for a bulleted list (the default),
+.B \(dq1\(dq
+for a numbered list,
+.B \(dqi\(dq
+for an ordered list with lowercase roman numerals,
+.B \(dqI\(dq
+for an ordered list with uppercase roman numerals,
+.B \(dqa\(dq
+for an ordered list with lowercase letters,
+.B \(dqA\(dq
+for an ordered list with uppercase letters.
+.TP
+.B .PP \(dq\fItitle\fP\(dq
+Begin a paragraph.
+If an argument is provided,
+it is used as the title of the paragraph and is printed in bold before the first line of the paragraph.
+Each paragraph is printed in a different page (slide).
+.TP
+.B .QE
+End a block quote started by
+.BR .QS .
+.TP
+.B .QS
+Start a block quote.
+A block quote must be ended with
+.BR .QE .
+A block quote is indented to the right and begins with a open quotation mark in bold face.
+.TP
+.B .SH level \(dq\fIheading\fP\(dq
+Specify a section heading and its level.
+The first argument defines the level of the section heading.
+The second argument is the heading itself.
+The section heading is printed in bold and two points larger than the regular paragraph size.
+If the level is less or equal than the number register
+.BR SS ,
+then the section heading is prefixed with a string containing the number of the section.
+.TP
+.B .TL \(dq\fItitle\fP\(dq [\(dq\fIsubtitle\fP\(dq]
+Specify the document title and subtitle.
+The first argument defines the document title.
+The second argument is optional and defines the document subtitle.
+If a subtitle is supplied, it is printed in a line below the title, and the title ends in a colon.
+If no subtitle is supplied, the title does not end in a colon.
+This macro also sets the
+.B .tL
+internal string to the title.
+The title is printed centered, in bold and four points larger than the regular paragraph size.
+.PP
+There are also some macros that are used internaly,
+and therefore should not be overwritten.
+Internal macros are listed below.
+.TP
+.B .bG
+Called at the beginning of the document by some macros.
+.TP
+.B .bM
+Called at the end of every page via a trap to set the bottom margin of the page.
+.TP
+.B .bY
+Called at the beginning of the document body by paragraph and section macros.
+.TP
+.B .fC
+Diversion used for figure captions.
+.TP
+.B .fG
+Diversion used for figures.
+.TP
+.B .pB
+Called at the beginning of every paragraph to set vertical space.
+.TP
+.B .rT
+Called at the beginning of every paragraph to reset the text formatting.
+.TP
+.B .sS
+Called at the beginning of every section to set the section point size.
+.TP
+.B .tT
+Called at the beginning of every page via a trap to print the top title (header).
+.TP
+.B .tM
+Called at the beginning of every page via a trap to set the top and left margins of the page.
+.SH NUMBER REGISTERS
+The
+.B \*(mn
+macro package uses number registers to control the formatting of the document.
+Number registers can be set at the top of a document using the
+.B .nr
+troff request.
+All number registers in
+.B \*(mn
+that are exposed for the user to set consist of two uppercase letters.
+.TP
+.B FD
+Figure spacing (distance).
+.TP
+.B FL
+Footnote length
+.TP
+.B LL
+Line length (default 16cm).
+.TP
+.B MB
+Bottom margin for both odd and even pages (default: 2cm).
+.TP
+.B ME
+Left margin for even pages (default: 2.5cm).
+.TP
+.B MO
+Left margin for odd pages (default: 2.5cm).
+.TP
+.B MT
+Top margin for both odd and even pages (default: 3cm).
+.TP
+.B PD
+Paragraph spacing (distance).
+.TP
+.B PH
+Page height (default: 29.7cm).
+.TP
+.B PI
+Paragraph indent.
+.TP
+.B PS
+Point size (default 10 points).
+.TP
+.B SS
+Section style:
+0 for no numbering,
+1 for numbering only for the first level heading.
+2 for numbering until the second level heading.
+3 for numbering until the third level heading.
+4 for numbering until the fourth level heading.
+5 for numbering until the fifth level heading.
+Five is the maximum level of section heading.
+(default 4).
+.TP
+.B VS
+Vertical line spacing.
+.PP
+There are also some number registers that are used internaly,
+and therefore should not be overwritten.
+Internal number registers are listed below.
+.TP
+.B bG
+Set to 1 when the macro
+.B .bG
+is run.
+.TP
+.B bY
+Set to 1 when the macro
+.B .bY
+is run.
+.TP
+.B fC
+Figure level counter.
+When a figure begins, this number register is incremented.
+When a figure ends, this number register is decremented.
+.TP
+.B fI
+Set to 1 at the end of a figure; reset at the beginning of a paragraph.
+.TP
+.B fN
+Figure counter.
+Each time the figure caption macro
+.RB ( .FC )
+is called with the argument of
+.B f
+(or with no argument), this counter is incremented.
+.TP
+.BR h1 " to " h5
+The number of the current sections of level 1 to 5.
+.TP
+.B iN
+The current indent level.
+.TP
+.B i1 " to " i9
+The previous saved indentation for each indent level.
+.TP
+.B lN
+List level counter.
+Each time the list start macro
+.RB ( .LS )
+is called, this counter is incremented.
+Each time the list end macro
+.RB ( .LE )
+is called, this counter is decremented.
+.TP
+.B mT
+Set to 0 on title page, set to 1 otherwise.
+This number register is used to avoid printing header titles and footer titles on the page.
+.TP
+.B sI
+Set to 1 when a section is processed;
+reset at the beginning of a paragraph.
+.TP
+.B sL
+The current section level counter.
+.TP
+.B tN
+Table counter.
+Each time the figure caption macro
+.RB ( .FC )
+is called with the argument of 
+.BR t ,
+this counter is incremented.
+.SH STRINGS
+The
+.B \*(mn
+macro package uses some strings as constants.
+These strings are by default in the English language,
+and should be redefined to match the document language.
+Strings can be set at the top of a document using the
+.B .ds
+troff request.
+.PP
+Known strings are listed below.
+.TP
+.B F
+Figure
+.TP
+.B T
+Table
+.PP
+There are also some strings that are used internaly,
+and therefore should not be overwritten.
+Internal strings are listed below.
+.TP
+.B sH
+This string contains the name of the last numbered section heading.
+It is used in the header of the page in some formats of documents.
+.TP
+.B sN
+This string contains the number prefix of the section heading.
+.SH SEE ALSO
+.IR mb (7),
+.IR mp (7),
+.IR troff (1)
