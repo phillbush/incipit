@@ -289,6 +289,30 @@
 .\}
 .if !"\\$1"" \fB\\$1\fP
 ..
+.       \" roman (regular) font
+.de R
+.nr fT \\n(.f
+.ie \\n(.$=0 .ft R
+.el \&\\$3\fR\\$1\f\\n(fT\\$2
+..
+.       \" bold font
+.de B
+.nr fT \\n(.f
+.ie \\n(.$=0 .ft B
+.el \&\\$3\fB\\$1\f\\n(fT\\$2
+..
+.       \" italic font
+.de I
+.nr fT \\n(.f
+.ie \\n(.$=0 .ft I
+.el \&\\$3\fI\\$1\f\\n(fT\\$2
+..
+.       \" constant width (monospace) font
+.de CW
+.nr fT \\n(.f
+.ie \\n(.$=0 .ft CW
+.el \&\\$3\f(CW\\$1\f\\n(fT\\$2
+..
 .nr fN 0
 .nr tN 0
 .nr FL 5.5i
