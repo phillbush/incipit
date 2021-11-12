@@ -22,7 +22,7 @@
 .       \" top margin
 .de tM
 'sp \\n(MTu/2u
-.ev 1
+.ev 2
 .lt \\n(LLu
 .ft R
 .tT
@@ -34,9 +34,23 @@
 .nr fI 0
 .nr sI 0
 .nr mT 1
+.nr nI 0 1
+.nr nP 0-\\n(MB
+.ch bM -\\n(MBu
+.if \\n(dn .nZ
 ..
 .       \" bottom margin
 .de bM
+.nr dn 0
+.if \\n(nI \{\
+.       ev 1
+.       nf
+.       nN
+.       rm nN
+.       if "\\n(.z"nY"a .di
+.       nr nN 0
+.       ev
+.\}
 'bp
 ..
 .       \" reset
@@ -47,8 +61,14 @@
 .fi
 .ad b
 .hy 14
-.ps \\n(PS
-.vs \\n(VS
+.ie \\n(n? \{\
+.       ps \\n(PS-2
+.       vs \\n(VS-2
+.\}
+.el \{\
+.       ps \\n(PS
+.       vs \\n(VS
+.\}
 .if n .ta 8n 16n 24n 32n 40n 48n 56n 64n 72n 80n
 .if t .ta 5n 10n 15n 20n 25n 30n 35n 40n 45n 50n 55n 60n 65n 70n 75n
 ..
@@ -100,11 +120,16 @@
 .el            .sp \\n(PDu
 .ne 1+\\n(.Vu
 .ft R
-.ie \\n(SP=1                 .ti \\n(.iu+\\n(PIu
-.el .if \\n(SP=2 .if !\\n(fI .ti \\n(.iu+\\n(PIu
+.ie !\\n(n? \{\
+.       ie \\n(SP=1                 .ti \\n(.iu+\\n(PIu
+.       el .if \\n(SP=2 .if !\\n(fI .ti \\n(.iu+\\n(PIu
+.       if !"\\$1"" \fB\\$1\fP
+.\}
+.el \{\
+.       if !"\\$1"" \fB\\$1\fP
+.\}
 .nr fI 0
 .nr sI 0
-.if !"\\$1"" \fB\\$1\fP
 ..
 .       \" SH - section heading
 .de SH
@@ -291,32 +316,87 @@
 ..
 .       \" roman (regular) font
 .de R
-.nr fT \\n(.f
 .ie \\n(.$=0 .ft R
-.el \&\\$3\fR\\$1\f\\n(fT\\$2
+.el \&\\$3\fR\\$1\fP\\$2
+..
+.       \" superscript
+.de SP
+\&\\$3\s-2\v'-3p'\\$1\v'3p'\s0\\$2
+..
+.       \" subscript
+.de SB
+\&\\$3\s-2\v'3p'\\$1\v'-3p'\s0\\$2
 ..
 .       \" bold font
 .de B
-.nr fT \\n(.f
 .ie \\n(.$=0 .ft B
-.el \&\\$3\fB\\$1\f\\n(fT\\$2
+.el \&\\$3\fB\\$1\fP\\$2
 ..
 .       \" italic font
 .de I
-.nr fT \\n(.f
 .ie \\n(.$=0 .ft I
-.el \&\\$3\fI\\$1\f\\n(fT\\$2
+.el \&\\$3\fI\\$1\fP\\$2
 ..
 .       \" constant width (monospace) font
 .de CW
-.nr fT \\n(.f
 .ie \\n(.$=0 .ft CW
-.el \&\\$3\f(CW\\$1\f\\n(fT\\$2
+.el \&\\$3\f(CW\\$1\fP\\$2
 ..
 .       \" URI hyperlink
 .de HL
 \W\\$1\\$2
 ..
+.       \" footnote start
+.de NS
+\s-2\v'-3p'\\n+(nC\v'3p'\s0
+'ce 0
+.di
+.ev 1
+.da nN
+.br
+.if \\n(n? \{\
+.       tm nested footnote
+.       ab
+.\}
+.nr n? 1
+.if !\\n+(nI-1 \{
+.       in 0
+.       if n _________________________
+.       if t \l'\\n(.lu'
+.       br
+.\}
+.fi
+.nr iS \\n(iN
+.nr iN 0
+.SP \\n(nC
+..
+.       \" footnote end
+.de NE
+.br
+.nr vS \\n(.v
+.ev
+.nr n? 0
+'di
+'nr nP -\\n(dn
+'if \\n(nI=1 .nr nP-(\\n(.v-\\n(vS)
+'ch bM \\n(nPu
+'if (\\n(nl+1v)>(\\n(.p+\\n(nP) \{\
+'       ch fo \\n(nlu+1v
+'\}
+'nr iN \\n(iS
+..
+.       \" process footnote overflow
+.de nX
+.if \\n(nI .di nY
+..
+.       \" get leftover footnote
+.de nZ
+.fn
+.nf
+.nY
+.ef
+..
+.nr nC 0 1
 .nr fN 0
 .nr tN 0
 .nr FL 5.5i

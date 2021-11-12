@@ -101,6 +101,23 @@ The following is an example of enumeration.
 • (E) Fifth item.
 
 
+§ Footnotes
+
+A footnote is a text placed at the bottom of a page in an incipit
+document.  There are two ways to include a footnote: inline footnotes
+and post-paragraph footnotes.
+
+.Inline footnotes.
+Inline footnotes are written between square brackets after an asterisk.
+There should be no space around the asterisk (neither before it or
+between the asterisk and the open square bracket).*[I am a footnote]
+The previous sentence contains a footnote.  Inline footnotes should be a
+few sentences long and should not contain paragraph breaks.
+
+.Post-paragraph footnotes.
+TODO.
+
+
 § Incipit
 
 The word “incipit” comes from the Latin and means “it begins”.  The

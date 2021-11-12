@@ -162,6 +162,20 @@ for an ordered list with lowercase letters,
 .B \(dqA\(dq
 for an ordered list with uppercase letters.
 .TP
+.B .NE
+End a footnote started by
+.BR .NS .
+.TP
+.B .NS
+Start a footnote.
+That macro should be called right after the place in the main text that the footnote references.
+The line before that macro should end in
+.B \ec
+(this is a requirement for the footnote reference to not be spaced after the text before it).
+Everything that follows that macro is the footnote.
+A footnote must be ended with
+.BR .NE .
+.TP
 .B .PP \(dq\fItitle\fP\(dq
 Begin a paragraph.
 If an argument is provided,
@@ -185,6 +199,12 @@ If a single argument is given, it is printed in roman font, without setting the 
 If two arguments are given, the first is printed in roman font, and the second one is printed after it.
 If three arguments are given, the first is printed in roman font, the second one is printed after it, and the third one is printed before it.
 .TP
+\&\fB.SB\fR "\fImid\fR" ["\fIend\fR"] ["\fIbeg\fR"]
+The first is printed as a subscript,
+the second one is printed after it,
+and the third one is printed before it.
+The second and third arguments are optional.
+.TP
 .B .SH level \(dq\fIheading\fP\(dq
 Specify a section heading and its level.
 The first argument defines the level of the section heading.
@@ -193,6 +213,12 @@ The section heading is printed in bold and two points larger than the regular pa
 If the level is less or equal than the number register
 .BR SS ,
 then the section heading is prefixed with a string containing the number of the section.
+.TP
+\&\fB.SP\fR "\fImid\fR" ["\fIend\fR"] ["\fIbeg\fR"]
+The first is printed as a superscript,
+the second one is printed after it,
+and the third one is printed before it.
+The second and third arguments are optional.
 .TP
 .B .TL \(dq\fItitle\fP\(dq [\(dq\fIsubtitle\fP\(dq]
 Specify the document title and subtitle.
@@ -223,6 +249,9 @@ Diversion used for figure captions.
 .TP
 .B .fG
 Diversion used for figures.
+.TP
+.BR .nN ", " .nX ", " .nY ", " .nZ
+Those macros are used internally to implement footnotes.
 .TP
 .B .pB
 Called at the beginning of every paragraph to set vertical space.
@@ -350,6 +379,9 @@ is called, this counter is decremented.
 .B mT
 Set to 0 on title page, set to 1 otherwise.
 This number register is used to avoid printing header titles and footer titles on the page.
+.TP
+.BR .nI ", " .nX C, " .nP ", " .n? ", " .iS ", " .vS
+Those numer registers are used internally to implement footnotes.
 .TP
 .B sI
 Set to 1 when a section is processed;

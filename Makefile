@@ -33,7 +33,7 @@ doc: ${DOC}
 	ps2pdf "-sPAPERSIZE=${PAPERSIZE}" $< $@
 
 .roff.ps:
-	<$< pic | tbl | eqn | troff -${MACRO} -mpictures - | dpost -p"${ORIENTATION}" >$@
+	<$< pic | tbl | troff -${MACRO} -mpictures - | dpost -p"${ORIENTATION}" >$@
 
 .txt.roff:
 	i2roff $< >$@
@@ -46,7 +46,7 @@ i2roff: incipit
 	chmod +x i2html
 
 i2html: incipit
-	sed '4s/mi/html/' incipit > i2html
+	sed '4s/roff/html/' incipit > i2html
 	chmod +x i2html
 
 tmac.b: common.tmac mb.tmac

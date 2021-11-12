@@ -2,7 +2,7 @@
 
 # set constants and call the parser
 BEGIN {
-	type = "mi"
+	type = "roff"
 
 	if (type == "html")
 		html = 1
@@ -19,69 +19,71 @@ BEGIN {
 	QUOTEBEG = 6
 	QUOTEEND = 7
 
-	# mi markup
-	markup["mi", "TITLE", "BEG"] = ".TL \""
-	markup["mi", "TITLE", "END"] = "\"\n"
-	markup["mi", "SUBTITLE", "BEG"] = "\" \""
-	markup["mi", "SUBTITLE", "END"] = ""
-	markup["mi", "AUTHOR", "BEG"] = ".AU"
-	markup["mi", "AUTHOR1", "BEG"] = " \""
-	markup["mi", "AUTHOR1", "END"] = "\""
-	markup["mi", "AUTHOR2", "BEG"] = " \""
-	markup["mi", "AUTHOR2", "END"] = "\" "
-	markup["mi", "AUTHOR", "END"] = "\n"
-	markup["mi", "ABSTRACT", "BEG"] = ".AB no\n"
-	markup["mi", "ABSTRACT", "END"] = ".AE\n"
-	markup["mi", "PARAGRAPH", "BEG"] = ".PP"
-	markup["mi", "PARATITLE", "BEG"] = " \""
-	markup["mi", "PARATITLE", "END"] = "\""
-	markup["mi", "PARAGRAPH", "MID"] = "\n"
-	markup["mi", "PARAGRAPH", "END"] = ""
-	markup["mi", "SECTION", "BEG"] = ".SH %d \""
-	markup["mi", "SECTION", "END"] = "\"\n"
-	markup["mi", "CODE", "BEG"] = ".CS\n"
-	markup["mi", "CODE", "END"] = ".CE\n"
-	markup["mi", "EMPHASIS", "BEG"] = "\\fI"
-	markup["mi", "EMPHASIS", "END"] = "\\fP"
-	markup["mi", "TOPIC", "BEG"] = "\\(lq\\fI"
-	markup["mi", "TOPIC", "END"] = "\\fP\\(rq"
-	markup["mi", "PRE", "BEG"] = "\\f(CW"
-	markup["mi", "PRE", "END"] = "\\fP"
-	markup["mi", "META", "BEG"] = "\\f(CW\\(aq"
-	markup["mi", "META", "END"] = "\\(aq\\fP"
-	markup["mi", "FIGURE", "BEG"] = ".FS\n"
-	markup["mi", "FIGURE", "END"] = ".FE\n"
-	markup["mi", "ENUMU", "BEG"] = ".LS\n"
-	markup["mi", "ENUMU", "END"] = ".LE\n"
-	markup["mi", "ENUMO", "BEG"] = ".LS %s\n"
-	markup["mi", "ENUMO", "END"] = ".LE\n"
-	markup["mi", "ITEM", "BEG"] = ".LI"
-	markup["mi", "COLON", "BEG"] = " \""
-	markup["mi", "COLON", "END"] = "\""
-	markup["mi", "ITEM", "MID"] = "\n"
-	markup["mi", "ITEM", "END"] = ""
-	markup["mi", "PIC", "BEG"] = ".PS\n"
-	markup["mi", "PIC", "END"] = ".PE\n"
-	markup["mi", "EQN", "BEG"] = ".EQ\n"
-	markup["mi", "EQN", "END"] = ".EN\n"
-	markup["mi", "IMAGE", "BEG"] = ".PP\n"
-	markup["mi", "IMAGE", "MID"] = ".BP \"%s\" \"\" \"\" \"c\" \"\" \"\" \"\"\n"
-	markup["mi", "IMAGE", "END"] = ""
-	markup["mi", "CAPTION", "MID"] = ".FC \"%s\" \"%s\"\n"
-	markup["mi", "TABLE", "BEG"] = ".TS\ncenter, %s;\n"
-	markup["mi", "TABLE", "END"] = ".TE\n"
-	markup["mi", "TH1", "BEG"] = "T{\n"
-	markup["mi", "TH1", "END"] = "\nT}"
-	markup["mi", "THN", "BEG"] = "\tT{\n"
-	markup["mi", "THN", "END"] = "\nT}"
-	markup["mi", "COL1", "BEG"] = "T{\n"
-	markup["mi", "COL1", "END"] = "\nT}"
-	markup["mi", "COLN", "BEG"] = "\tT{\n"
-	markup["mi", "COLN", "END"] = "\nT}"
-	markup["mi", "ROW", "BEG"] = ""
-	markup["mi", "ROW", "END"] = "\n"
-	markup["mi", "QUOTE", "BEG"] = ".QS\n"
-	markup["mi", "QUOTE", "END"] = ".QE\n"
+	# roff markup
+	markup["roff", "TITLE", "BEG"] = ".TL \""
+	markup["roff", "TITLE", "END"] = "\"\n"
+	markup["roff", "SUBTITLE", "BEG"] = "\" \""
+	markup["roff", "SUBTITLE", "END"] = ""
+	markup["roff", "AUTHOR", "BEG"] = ".AU"
+	markup["roff", "AUTHOR1", "BEG"] = " \""
+	markup["roff", "AUTHOR1", "END"] = "\""
+	markup["roff", "AUTHOR2", "BEG"] = " \""
+	markup["roff", "AUTHOR2", "END"] = "\" "
+	markup["roff", "AUTHOR", "END"] = "\n"
+	markup["roff", "ABSTRACT", "BEG"] = ".AB no\n"
+	markup["roff", "ABSTRACT", "END"] = ".AE\n"
+	markup["roff", "PARAGRAPH", "BEG"] = ".PP"
+	markup["roff", "PARATITLE", "BEG"] = " \""
+	markup["roff", "PARATITLE", "END"] = "\""
+	markup["roff", "PARAGRAPH", "MID"] = "\n"
+	markup["roff", "PARAGRAPH", "END"] = ""
+	markup["roff", "SECTION", "BEG"] = ".SH %d \""
+	markup["roff", "SECTION", "END"] = "\"\n"
+	markup["roff", "CODE", "BEG"] = ".CS\n"
+	markup["roff", "CODE", "END"] = ".CE\n"
+	markup["roff", "EMPHASIS", "BEG"] = "\\fI"
+	markup["roff", "EMPHASIS", "END"] = "\\fP"
+	markup["roff", "TOPIC", "BEG"] = "\\(lq\\fI"
+	markup["roff", "TOPIC", "END"] = "\\fP\\(rq"
+	markup["roff", "PRE", "BEG"] = "\\f(CW"
+	markup["roff", "PRE", "END"] = "\\fP"
+	markup["roff", "META", "BEG"] = "\\f(CW\\(aq"
+	markup["roff", "META", "END"] = "\\(aq\\fP"
+	markup["roff", "FIGURE", "BEG"] = ".FS\n"
+	markup["roff", "FIGURE", "END"] = ".FE\n"
+	markup["roff", "ENUMU", "BEG"] = ".LS\n"
+	markup["roff", "ENUMU", "END"] = ".LE\n"
+	markup["roff", "ENUMO", "BEG"] = ".LS %s\n"
+	markup["roff", "ENUMO", "END"] = ".LE\n"
+	markup["roff", "ITEM", "BEG"] = ".LI"
+	markup["roff", "COLON", "BEG"] = " \""
+	markup["roff", "COLON", "END"] = "\""
+	markup["roff", "ITEM", "MID"] = "\n"
+	markup["roff", "ITEM", "END"] = ""
+	markup["roff", "PIC", "BEG"] = ".PS\n"
+	markup["roff", "PIC", "END"] = ".PE\n"
+	markup["roff", "EQN", "BEG"] = ".EQ\n"
+	markup["roff", "EQN", "END"] = ".EN\n"
+	markup["roff", "IMAGE", "BEG"] = ".PP\n"
+	markup["roff", "IMAGE", "MID"] = ".BP \"%s\" \"\" \"\" \"c\" \"\" \"\" \"\"\n"
+	markup["roff", "IMAGE", "END"] = ""
+	markup["roff", "CAPTION", "MID"] = ".FC \"%s\" \"%s\"\n"
+	markup["roff", "TABLE", "BEG"] = ".TS\ncenter, %s;\n"
+	markup["roff", "TABLE", "END"] = ".TE\n"
+	markup["roff", "TH1", "BEG"] = "T{\n"
+	markup["roff", "TH1", "END"] = "\nT}"
+	markup["roff", "THN", "BEG"] = "\tT{\n"
+	markup["roff", "THN", "END"] = "\nT}"
+	markup["roff", "COL1", "BEG"] = "T{\n"
+	markup["roff", "COL1", "END"] = "\nT}"
+	markup["roff", "COLN", "BEG"] = "\tT{\n"
+	markup["roff", "COLN", "END"] = "\nT}"
+	markup["roff", "ROW", "BEG"] = ""
+	markup["roff", "ROW", "END"] = "\n"
+	markup["roff", "QUOTE", "BEG"] = ".QS\n"
+	markup["roff", "QUOTE", "END"] = ".QE\n"
+	markup["roff", "FOOTNOTE", "BEG"] = "\\c\n.NS\n"
+	markup["roff", "FOOTNOTE", "END"] = "\n.NE"
 
 	# html markup
 	markup["html", "TITLE", "BEG"] = "<h1 id=\"%s\">"
@@ -323,12 +325,18 @@ function hyperlink(after,    before, punct, mid, puncttype) {
 function expandpunct(after,    before, punct) {
 	before = ""
 	punct = ""
-	while (match(after, /\{|\}|⟨|⟩|`|‘|’|“|”/)) {
+	while (match(after, /\{|\}|⟨|⟩|`|‘|’|“|”|\*\[|\]$|\] */)) {
 		before = before substr(after, 1, RSTART - 1)
 		punct = substr(after, RSTART, RLENGTH)
 		after = substr(after, RSTART + RLENGTH)
 		if (puncttype) {
-			if (puncttype == "{" && punct == "}") {
+			if (puncttype == "*[" && punct == "]" && after == "") {
+				before = before markup[type, "FOOTNOTE", "END"]
+				puncttype = ""
+			} else if (puncttype == "*[" && punct ~ /\] */) {
+				before = before markup[type, "FOOTNOTE", "END"] "\n"
+				puncttype = ""
+			} else if (puncttype == "{" && punct == "}") {
 				before = before markup[type, "PRE", "END"]
 				puncttype = ""
 			} else if (puncttype == "⟨" && punct == "⟩") {
@@ -344,8 +352,10 @@ function expandpunct(after,    before, punct) {
 				before = before markup[type, "TOPIC", "END"]
 				puncttype = ""
 			}
-		} else if (punct == "{" || punct == "`" || punct == "⟨" || punct == "“" || punct == "‘") {
-			if (punct == "{") {
+		} else if (punct == "*[" || punct == "{" || punct == "`" || punct == "⟨" || punct == "“" || punct == "‘") {
+			if (punct == "*[") {
+				before = before markup[type, "FOOTNOTE", "BEG"]
+			} else if (punct == "{") {
 				before = before markup[type, "PRE", "BEG"]
 			} else if (punct == "`") {
 				before = before markup[type, "PRE", "BEG"]
