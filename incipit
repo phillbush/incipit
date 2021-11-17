@@ -18,9 +18,10 @@ BEGIN {
 	TABLEMARK = 5
 	QUOTEBEG = 6
 	QUOTEEND = 7
+	FOOTNOTE = 8
 
 	# roff markup
-	markup["roff", "TITLE", "BEG"] = ".TL \""
+	markup["roff", "TITLE", "BEG"] = (ARGC > 2 ? ".CH \"" : ".TL \"")
 	markup["roff", "TITLE", "END"] = "\"\n"
 	markup["roff", "SUBTITLE", "BEG"] = "\" \""
 	markup["roff", "SUBTITLE", "END"] = ""
@@ -43,8 +44,8 @@ BEGIN {
 	markup["roff", "CODE", "END"] = ".CE\n"
 	markup["roff", "EMPHASIS", "BEG"] = "\\fI"
 	markup["roff", "EMPHASIS", "END"] = "\\fP"
-	markup["roff", "TOPIC", "BEG"] = "\\(lq\\fI"
-	markup["roff", "TOPIC", "END"] = "\\fP\\(rq"
+	markup["roff", "TOPIC", "BEG"] = "“\\fI"
+	markup["roff", "TOPIC", "END"] = "\\fP”"
 	markup["roff", "PRE", "BEG"] = "\\f(CW"
 	markup["roff", "PRE", "END"] = "\\fP"
 	markup["roff", "META", "BEG"] = "\\f(CW\\(aq"
@@ -82,7 +83,7 @@ BEGIN {
 	markup["roff", "ROW", "END"] = "\n"
 	markup["roff", "QUOTE", "BEG"] = ".QS\n"
 	markup["roff", "QUOTE", "END"] = ".QE\n"
-	markup["roff", "FOOTNOTE", "BEG"] = "\\c\n.NS\n"
+	markup["roff", "FOOTNOTE", "BEG"] = "\\c\n.NS"
 	markup["roff", "FOOTNOTE", "END"] = "\n.NE"
 
 	# html markup
@@ -156,11 +157,9 @@ BEGIN {
 	document()
 }
 
-# print error and exit
-function err(str) {
-	printf "incipit: %s\n", str >"/dev/stderr"
-	error = 1
-	exit error
+# get line from file
+function fgetline() {
+	return getline < file
 }
 
 # initiate number records and fonts for troff
@@ -187,14 +186,19 @@ function gettok(    a, n) {
 		return 1
 	}
 	if (length(line) == 0) {
-		if ((getline line) <= 0) {
+		if (fgetline() <= 0) {
 			eof = 1
 			return -1
 		} else {
+			line = $0
 			n = split(line, a)
 			if (n == 0) {
 				toktype = BLANK
 				tok = line
+				line = ""
+			} else if (match(line, /^\* /)) {
+				toktype = FOOTNOTE
+				tok = substr(line, RSTART + RLENGTH)
 				line = ""
 			} else if (match(line, /^\t*• *(\([^)]+\))? *([^:]+: +)?/)) {
 				toktype = ENUMMARK
@@ -249,10 +253,10 @@ function printcode(s) {
 	if (troff) {
 		gsub(/\\/, "\\e", s)
 		gsub(/"/, "\\(dq", s)
-		gsub(/'/, "\\(aq", s)
+		#gsub(/'/, "\\(aq", s)
 		gsub(/`/, "\\(ga", s)
 		gsub(/-/, "\\(hy", s)
-		sub(/^\./, "\\\\\\&&", s)
+		gsub(/^\./, "\\\\\\&&", s)
 	} else if (html) {
 		gsub(/&/, "\\&amp;", s)
 		gsub(/</, "\\&lt;", s)
@@ -267,9 +271,8 @@ function escape(s) {
 	if (troff) {
 		gsub(/\\/, "\\e", s)
 		gsub(/"/, "\\(dq", s)
-		gsub(/'/, "\\(aq", s)
-		gsub(/-/, "\\(hy", s)
-		sub(/\./, "\\\\\\&&", s)
+		#gsub(/'/, "\\(aq", s)
+		gsub(/\./, "\\\\\\&&", s)
 	} else if (html) {
 		gsub(/&/, "\\&amp;", s)
 		gsub(/</, "\\&lt;", s)
@@ -295,40 +298,23 @@ function printnormal(s) {
 	printf "%s", escape(s)
 }
 
-# expand html hyperlinks
-function hyperlink(after,    before, punct, mid, puncttype) {
-	if (html) {
-		while (match(after, /«|»/)) {
-			mid = substr(after, 1, RSTART - 1)
-			punct = substr(after, RSTART, RLENGTH)
-			after = substr(after, RSTART + RLENGTH)
-			if (puncttype) {
-				if (match(mid, / *-- */)) {
-					mid = substr(mid, RSTART + RLENGTH) markup[type, "LINK", "MID"] substr(mid, 1, RSTART - 1)
-					before = before mid markup[type, "LINK", "END"]
-				} else {
-					before = before mid markup[type, "LINK", "MID"] mid markup[type, "LINK", "END"]
-				}
-				puncttype = ""
-			} else if (punct == "«") {
-				before = before mid markup[type, "LINK", "BEG"]
-				puncttype = punct
-			} else {
-				before = before mid
-			}
-		}
-	}
-	return before after
-}
-
-# do inline punctuation expansion text
-function expandpunct(after,    before, punct) {
+# do inline punctuation expansion
+function expandpunct(after,    before, punct, matched) {
 	before = ""
 	punct = ""
-	while (match(after, /\{|\}|⟨|⟩|`|‘|’|“|”|\*\[|\]$|\] */)) {
-		before = before substr(after, 1, RSTART - 1)
-		punct = substr(after, RSTART, RLENGTH)
-		after = substr(after, RSTART + RLENGTH)
+	RSTART = 0
+	RLENGTH = 0
+	while (match(after, /\{|\}|⟨|⟩|`|‘|’|“|”|\*\[|\]$|\] */) || (puncttype && after)) {
+		matched = RSTART
+		if (matched) {
+			before = before substr(after, 1, RSTART - 1)
+			punct = substr(after, RSTART, RLENGTH)
+			after = substr(after, RSTART + RLENGTH)
+		} else {
+			before = before after
+			punct = ""
+			after = ""
+		}
 		if (puncttype) {
 			if (puncttype == "*[" && punct == "]" && after == "") {
 				before = before markup[type, "FOOTNOTE", "END"]
@@ -352,9 +338,9 @@ function expandpunct(after,    before, punct) {
 				before = before markup[type, "TOPIC", "END"]
 				puncttype = ""
 			}
-		} else if (punct == "*[" || punct == "{" || punct == "`" || punct == "⟨" || punct == "“" || punct == "‘") {
+		} else if (punct == "«" || punct == "*[" || punct == "{" || punct == "`" || punct == "⟨" || punct == "“" || punct == "‘") {
 			if (punct == "*[") {
-				before = before markup[type, "FOOTNOTE", "BEG"]
+				before = before markup[type, "FOOTNOTE", "BEG"] "\n"
 			} else if (punct == "{") {
 				before = before markup[type, "PRE", "BEG"]
 			} else if (punct == "`") {
@@ -368,17 +354,88 @@ function expandpunct(after,    before, punct) {
 			}
 			puncttype = punct
 		}
+		if (!matched) {
+			after = ""
+		}
 	}
 	return before after
 }
 
-# print text marked up with inline punctuation
-function printmarkup(s) {
+# handle hyperlinks
+function hyperlink(after,    before, punct, nl, end, matched) {
+	before = ""
+	punct = ""
+	RSTART = 0
+	RLENGTH = 0
+	while (match(after, /«| *-- *|»/) || (hyperpuncttype && after)) {
+		matched = RSTART
+		if (matched) {
+			before = before substr(after, 1, RSTART - 1)
+			punct = substr(after, RSTART, RLENGTH)
+			after = substr(after, RSTART + RLENGTH)
+		} else {
+			before = before after
+			punct = ""
+			after = ""
+		}
+		if (hyperpuncttype) {
+			if (hyperpuncttype == "«") {
+				link = link (link ? " " : "") before
+				before = ""
+				if (punct ~ / *-- */) {
+					hyperpuncttype = "--"
+				}
+			} else if (hyperpuncttype == "--") {
+				uri = uri (uri ? " " : "") before
+				before = ""
+				if (punct == "»") {
+					if (troff) {
+						end = ""
+						if (after) {
+							if (substr(after, 1, 1) != " ") {
+								end = " \"" substr(after, 1, RSTART - 1) "\""
+								after = substr(after, RSTART + RLENGTH)
+							} else {
+								sub(/^ */, "", after)
+							}
+						}
+						nl = (after ? "\n" : "")
+						savedbefore = savedbefore link markup["roff", "FOOTNOTE", "BEG"] end "\n"
+						before = savedbefore uri markup["roff", "FOOTNOTE", "END"] nl
+					} else {
+						savedbefore = savedbefore markup["html", "LINK", "BEG"]
+						before = savedbefore uri markup["html", "LINK", "MID"] link markup["html", "LINK", "END"]
+					}
+					hyperpuncttype = ""
+				}
+			}
+		} else if (punct == "«") {
+			savedbefore = ""
+			if (punct == "«") {
+				savedbefore = before
+				before = ""
+				link = ""
+				uri = ""
+			}
+			hyperpuncttype = punct
+		}
+		if (!matched) {
+			after = ""
+		}
+	}
+	return before after
+}
+
+# replace text marked up with inline punctuation
+function punctuate(s) {
 	sub(/^[ \t]+/, "", s)
 	gsub(/[ \t]+/, " ", s)
 	s = escape(s)
 	s = hyperlink(s)
-	printf "%s", expandpunct(s)
+	s = expandpunct(s)
+	if (troff)
+		gsub(/-/, "\\(hy", s)
+	return s
 }
 
 # parse document title
@@ -393,7 +450,7 @@ function title(    id, s) {
 			if (toktype == NONE) {
 				printf markup[type, "SUBTITLE", "BEG"]
 				sub(/.$/, "", tok)
-				printmarkup(tok)
+				printf "%s", punctuate(tok)
 				printf markup[type, "SUBTITLE", "END"]
 			} else {
 				ungettok()
@@ -416,7 +473,7 @@ function author(    ret, inst) {
 		if (gettok() > 0) {
 			if (toktype == NONE) {
 				printf markup[type, "AUTHOR2", "BEG"]
-				printmarkup(tok)
+				printf "%s", punctuate(tok)
 				printf markup[type, "AUTHOR2", "END"]
 			} else {
 				ungettok()
@@ -427,11 +484,12 @@ function author(    ret, inst) {
 }
 
 # parse abstract (part of document incipit)
-function abstract() {
+function abstract(s) {
 	printf "%s", markup[type, "ABSTRACT", "BEG"]
 	while (!eof && toktype == NONE) {
-		printmarkup(tok)
-		print ""
+		s = punctuate(tok)
+		if (s)
+			print s
 		gettok()
 	}
 	printf "%s", markup[type, "ABSTRACT", "END"]
@@ -452,30 +510,64 @@ function docincipit(    n) {
 	ungettok()
 }
 
+# parse footnote
+function footnote(    s, ret) {
+	ret = punctuate(tok)
+	gettok()
+	while (!eof && toktype == NONE) {
+		s = punctuate(tok)
+		if (s)
+			ret = ret "\n" s
+		gettok()
+	}
+	ungettok()
+	return ret
+}
+
 # parse paragraph
-function paragraph(    rem) {
-	printf markup[type, "PARAGRAPH", "BEG"]
+function paragraph(    s, rem, mid, ret, note) {
+	ret = markup[type, "PARAGRAPH", "BEG"]
 	if (substr(tok, 1, 1) == ".") {
 		rem = ""
-		printf "%s", markup[type, "PARATITLE", "BEG"]
+		ret = ret markup[type, "PARATITLE", "BEG"]
 		tok = substr(tok, 2)
 		match(tok, /^[^.]*[.]? */)
 		rem = substr(tok, RSTART + RLENGTH)
 		tok = substr(tok, RSTART, RLENGTH)
-		printmarkup(tok)
-		printf "%s", markup[type, "PARATITLE", "END"]
+		ret = ret punctuate(tok)
+		ret = ret markup[type, "PARATITLE", "END"]
 		if (html && rem != "")
-			printmarkup(rem)
+			ret = ret punctuate(rem)
 		gettok()
 	}
-	printf markup[type, "PARAGRAPH", "MID"]
+	ret = ret markup[type, "PARAGRAPH", "MID"]
 	while (!eof && toktype == NONE) {
-		printmarkup(tok)
-		print ""
+		s = punctuate(tok)
+		if (s)
+			ret = ret s "\n"
 		gettok()
 	}
-	printf markup[type, "PARAGRAPH", "END"]
+	while (toktype == FOOTNOTE) {
+		note = footnote()
+		if (match(ret, /[*][^\n ]+/)) {
+			rem = substr(ret, RSTART + RLENGTH)
+			mid = substr(ret, RSTART + 1, RLENGTH - 1)
+			ret = substr(ret, 1, RSTART - 1)
+			ret = ret markup[type, "FOOTNOTE", "BEG"] " \"" mid "\"\n"
+			ret = ret note markup[type, "FOOTNOTE", "END"] (substr(rem, 1, 1) == "\n" ? "" : "\n")
+			ret = ret rem
+		} else if (match(ret, /[*] */)) {
+			rem = substr(ret, RSTART + RLENGTH)
+			ret = substr(ret, 1, RSTART - 1)
+			ret = ret markup[type, "FOOTNOTE", "BEG"] "\n"
+			ret = ret note markup[type, "FOOTNOTE", "END"] (substr(rem, 1, 1) == "\n" ? "" : "\n")
+			ret = ret rem
+		}
+		gettok()
+	}
+	ret = ret markup[type, "PARAGRAPH", "END"]
 	ungettok()
+	return ret
 }
 
 # parse code figure
@@ -485,7 +577,7 @@ function code(    ret, caption) {
 	sub(/^CODE:[ \t]*/, "", tok)
 	sub(/[ \t]*{$/, "", tok)
 	caption = tok
-	while ((ret = (getline)) == 1) {
+	while ((ret = fgetline()) == 1) {
 		if ($0 ~ /^}[ \t]*$/)
 			break
 		printcode($0)
@@ -506,7 +598,7 @@ function image(    ret, fig, caption) {
 	sub(/^IMAGE:[ \t]*/, "", tok)
 	sub(/[ \t]*{$/, "", tok)
 	caption = tok
-	while ((ret = (getline)) == 1) {
+	while ((ret = fgetline()) == 1) {
 		if ($0 ~ /^}[ \t]*$/)
 			break
 		sub(/^[ \t]+/, "")
@@ -530,7 +622,7 @@ function video(    ret, fig, caption) {
 	sub(/^VIDEO:[ \t]*/, "", tok)
 	sub(/[ \t]*{$/, "", tok)
 	caption = tok
-	while ((ret = (getline)) == 1) {
+	while ((ret = fgetline()) == 1) {
 		if ($0 ~ /^}[ \t]*$/)
 			break
 		sub(/^[ \t]+/, "")
@@ -554,7 +646,7 @@ function pic(    ret, caption) {
 	sub(/^PIC:[ \t]*/, "", tok)
 	sub(/[ \t]*{$/, "", tok)
 	caption = tok
-	while ((ret = (getline)) == 1) {
+	while ((ret = fgetline()) == 1) {
 		if ($0 ~ /^}[ \t]*$/)
 			break
 		sub(/^[ \t]+/, "")
@@ -580,7 +672,7 @@ function eqn(    ret) {
 	sub(/^EQN:[ \t]*/, "", tok)
 	sub(/[ \t]*{$/, "", tok)
 	caption = tok
-	while ((ret = (getline)) == 1) {
+	while ((ret = fgetline()) == 1) {
 		if ($0 ~ /^}[ \t]*$/)
 			break
 		sub(/^[ \t]+/, "")
@@ -653,8 +745,10 @@ function enumeration(    enum, lvl, enumlvl, label, colon) {
 			}
 			printf markup[type, "ITEM", "MID"]
 		} else {
-			printmarkup(tok)
-			print ""
+			s = punctuate(tok)
+			if (s) {
+				print s
+			}
 		}
 		gettok()
 	}
@@ -673,10 +767,10 @@ function section(    lvl) {
 		lvl++
 		sub(/^(§)/, "", tok)
 	}
-	if (gettok() < 0)
+	if (gettok() <= 0)
 		return
 	printf markup[type, "SECTION", "BEG"], lvl, genid(tok)
-	printmarkup(tok)
+	printf "%s", punctuate(tok)
 	printf markup[type, "SECTION", "END"], lvl
 }
 
@@ -684,7 +778,7 @@ function section(    lvl) {
 function table(    div, sep, tbl, ncol, nrow, caption) {
 	div = sep = 0
 	col = ncol = nrow = 1
-	while ((ret = getline) == 1) {
+	while ((ret = fgetline()) == 1) {
 		if ($0 ~ /^[ \t]*└.*┘[ \t]*/)
 			break
 		if ($0 ~ /─/) {
@@ -738,7 +832,7 @@ function table(    div, sep, tbl, ncol, nrow, caption) {
 		printf "%s", markup[type, "ROW", "BEG"]
 		for (j = 1; j <= ncol; j++) {
 			printf "%s", markup[type, (i == 1 ? "TH" : "COL") (j == 1 ? "1" : "N"), "BEG"]
-			printmarkup(tbl[i, j])
+			printf "%s", punctuate(tbl[i, j])
 			printf "%s", markup[type, (i == 1 ? "TH" : "COL") (j == 1 ? "1" : "N"), "END"]
 		}
 		printf "%s", markup[type, "ROW", "END"]
@@ -779,7 +873,7 @@ function quote() {
 		} else if (toktype == NONE && NR == 1) {
 			docincipit()
 		} else if (toktype == NONE) {
-			paragraph()
+			printf "%s", paragraph()
 		}
 	}
 	quotelvl--
@@ -788,31 +882,31 @@ function quote() {
 }
 
 # parse the entire document
-function document() {
-	while (gettok() > 0) {
-		if (toktype == SECTIONMARK) {
-			section()
-		} else if (toktype == ENUMMARK) {
-			enumeration()
-		} else if (toktype == FIGUREMARK) {
-			figure()
-		} else if (toktype == TABLEMARK) {
-			table()
-		} else if (toktype == QUOTEBEG) {
-			quote()
-		} else if (toktype == NONE && NR == 1) {
-			docincipit()
-		} else if (toktype == NONE) {
-			paragraph()
+function document(  i, n) {
+	for (i = 1; i < ARGC; i++) {
+		file = ARGV[i]
+		eof = 0
+		n = 0
+		while (gettok() > 0) {
+			if (toktype == SECTIONMARK) {
+				section()
+			} else if (toktype == ENUMMARK) {
+				enumeration()
+			} else if (toktype == FIGUREMARK) {
+				figure()
+			} else if (toktype == TABLEMARK) {
+				table()
+			} else if (toktype == QUOTEBEG) {
+				quote()
+			} else if (toktype == NONE && !n) {
+				docincipit()
+			} else if (toktype == NONE) {
+				printf "%s", paragraph()
+			}
+			n = 1
 		}
 	}
 	if (html) {
 		print ""
-	}
-}
-
-END {
-	if (error) {
-		exit error
 	}
 }

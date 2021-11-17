@@ -5,7 +5,7 @@ TMACPREFIX = ${PREFIX}/share/tmac
 
 # generated files
 DOC = README.pdf
-TMACS = tmac.p tmac.t
+TMACS = tmac.p tmac.t tmac.b
 PROGS = i2html i2roff
 
 # configuration for A4 papersize (used for technical papers)
@@ -46,7 +46,7 @@ i2roff: incipit
 	chmod +x i2html
 
 i2html: incipit
-	sed '4s/roff/html/' incipit > i2html
+	sed '5s/roff/html/' incipit > i2html
 	chmod +x i2html
 
 tmac.b: common.tmac mb.tmac
@@ -61,16 +61,20 @@ tmac.p: common.tmac mp.tmac
 install: all
 	install -D -m 755 i2roff ${DESTDIR}${PREFIX}/bin/i2roff
 	install -D -m 755 i2html ${DESTDIR}${PREFIX}/bin/i2html
+	install -D -m 644 mb.7 ${DESTDIR}${MANPREFIX}/man7/mb.7
 	install -D -m 644 mp.7 ${DESTDIR}${MANPREFIX}/man7/mp.7
 	install -D -m 644 mt.7 ${DESTDIR}${MANPREFIX}/man7/mt.7
+	install -D -m 644 tmac.b ${DESTDIR}${TMACPREFIX}/tmac.b
 	install -D -m 644 tmac.p ${DESTDIR}${TMACPREFIX}/tmac.p
 	install -D -m 644 tmac.t ${DESTDIR}${TMACPREFIX}/tmac.t
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/i2roff
 	rm -f ${DESTDIR}${PREFIX}/bin/i2html
+	rm -f ${DESTDIR}${MANPREFIX}/man7/mb.7
 	rm -f ${DESTDIR}${MANPREFIX}/man7/mp.7
 	rm -f ${DESTDIR}${MANPREFIX}/man7/mt.7
+	rm -f ${DESTDIR}${TMACPREFIX}/tmac.b
 	rm -f ${DESTDIR}${TMACPREFIX}/tmac.p
 	rm -f ${DESTDIR}${TMACPREFIX}/tmac.t
 

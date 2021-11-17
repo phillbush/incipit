@@ -1,0 +1,110 @@
+.\" mb: macros for books
+.       \" top title
+.de tT
+.ps \\n(PS-2
+.vs \\n(VS-2p
+.ie \\*(cH .tl 
+.el .ie \\n(mT \{
+.       if e \{\
+.              ie !\\*(cH .tl %\\*(cH
+.              el               .tl %\\*(tL
+.       \}
+.       if o \{\
+.              ie !\\*(sH .tl \\*(sH%
+.              el               .tl %
+.       \}
+.       br
+.       in 0
+.       if n _________________________
+.       if t \l'\\n(LLu'
+.       br
+.\}
+.el .tl 
+..
+.       \" paragraph break
+.de pB
+.br
+..
+.       \" setup section
+.de sS
+.ps \\n(PS+2
+.vs \\n(VS+2p
+..
+.       \" table of contents
+.de TC
+.bp
+.ce 0
+.fi
+.ad r
+.ft B
+.ps \\n(PS+30
+.vs \\n(VS+30p
+\\*J
+.ps \\n(PS
+.vs \\n(VSp
+.sp 4
+.ns
+.rT
+.ad l
+..
+.       \" index chapter
+.de IC
+.ne 8
+.ta 0
+.sp 1v
+.ad l
+.ft B
+.in 0
+.mk
+\\$2
+.br
+.rt
+.in 3n
+.ll \\n(LLu-5n
+\\$3
+.mk
+.br
+.rt
+.in 0
+.ll \\n(LLu
+.ad r
+\\$1
+.ft P
+.br
+.sp .3v
+.ns
+..
+.       \" index section
+.de IS
+.sp .1v
+.ad l
+.ft R
+.in 3n
+.mk
+\\$2
+.br
+.rt
+.in 8n
+.ll \\n(LLu-5n
+\\$3
+.mk
+.br
+.rt
+.in 0
+.ll \\n(LLu
+.ad r
+\\$1
+.ft P
+.br
+..
+.       \" initialization
+.nr PI 5n
+.nr PS 12
+.nr VS 14
+.       \" page size (ISO B5)
+.if !\n(LL .nr LL 4.9i  \" line length
+.if !\n(MB .nr MB 1i    \" bottom margin
+.if !\n(ME .nr ME 1i    \" left margin for even pages
+.if !\n(MO .nr MO 1i    \" left margin for odd pages
+.if !\n(MT .nr MT 1i    \" top margin
+.if !\n(PH .nr PH 9.8i  \" page height

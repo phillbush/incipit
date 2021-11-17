@@ -1,7 +1,7 @@
-.ds mn mt
-.TH MT 7
+.ds mn mb
+.TH MB 7
 .SH NAME
-\*(mn \- macros for technical papers
+\*(mn \- macros for books
 .SH SYNOPSIS
 .B troff
 .B \-\*(mn
@@ -10,15 +10,15 @@
 .SH DESCRIPTION
 The
 .B \*(mn
-troff macro package provides macros for formatting technical papers.
+troff macro package provides macros for formatting books.
 .PP
 The content of a document processed by troff with the
 .B \*(mn
-macro package fits, by default, an ISO A4 paper.
+macro package fits, by default, a ISO B5 paper.
 When using the
 .B \*(mn
 macro package,
-options to set the page size to ISO A4 must be passed to
+options to set the page size to ISO B5 paper must be passed to
 the post-processors that convert the output of troff to postscript or pdf.
 .PP
 In a
@@ -26,6 +26,16 @@ In a
 document, lines beginning with the control character '.' are called "macro lines".
 It usually consists of two capital letters.
 The words following the macro names are arguments to the macro.
+.PP
+When a document is processed with the
+.B mb
+macro package,
+troff outputs to the standard error (stderr)
+.B .IC
+and
+.B .IS
+macro lines prefixed with "index:" to be used for creating the table of contents.
+The standard error should be redirected to a file for further processing.
 .SH MACROS
 The
 .B \*(mn
@@ -35,29 +45,6 @@ All macros in
 that are exposed to the user consist of two uppercase letters.
 .PP
 Known macros are listed below.
-.TP
-.B .AB \(dq\fIidentifier\fP\(dq
-Begin the abstract.
-If an argument is supplied, it is used to identify the abstract
-(this string should be, in english documents, \(dqAbstract\(dq).
-The abstract should be ended with the
-.B .AE
-macro.
-The abstract should contain paragraphs (marked by the
-.B .PP
-macro).
-The
-.B .AB
-macro should be used directly after a
-.BR .TL ,
-or
-.B .AU
-macros
-.TP
-.B .AE
-End an abstract that was started by the
-.B .AB
-macro.
 .TP
 .B .AU \(dq\fIauthor\fP\(dq [\(dq\fIinstitution\fP\(dq]
 Specify an author of the document and the institution of this author.
@@ -81,6 +68,23 @@ If three arguments are given, the first is printed in bold font, the second one 
 .B .CE
 End a code block started by
 .BR .CS .
+.TP
+\&\fB.CH\fR "\fIchapter\fR" ["\fIprefix\fR"]
+Begin a chapter.
+The first argument is the chapter name.
+The second argument is the prefix of the chapter (such as "Appendix A").
+If no argument is provided, use the value of the string
+.B C
+as prefix, (which by default is unset).
+If the string
+.B C
+is empty or not set, use no prefix for the chapter.
+This macro also sets the
+.B cH
+internal string to the chapter name;
+and sets the
+.B h0
+internal number register to the chapter number.
 .TP
 .B .CS
 Start a code block.
@@ -153,6 +157,19 @@ If a single argument is given, it is printed in italic font, without setting the
 If two arguments are given, the first is printed in italic font, and the second one is printed after it.
 If three arguments are given, the first is printed in italic font, the second one is printed after it, and the third one is printed before it.
 .TP
+\&\fB.IC\fR \fIpage\fR \fInumber\fR \fIname\fR
+Create entry for a chapter in the table of contents.
+The first argument is the page in which the chapter begins.
+The second argument is the number of the chapter.
+The third argument is the name of the chapter.
+.TP
+\&\fB.IS\fR \fIpage\fR \fIlevel\fR \fIname\fR
+Create entry for a section heading in the table of contents.
+The first argument is the page in which the section begins.
+The second argument is the level of the section
+(such as "1.2.3" for the third subsection of the second section of the first chapter).
+The third argument is the name of the section.
+.TP
 .B .LE
 End a list started with the
 .B .LS
@@ -209,6 +226,7 @@ The number registers
 and
 .B PT
 change how paragraphs are printed.
+Each paragraph is printed in a different page (slide).
 .TP
 .B .QE
 End a block quote started by
@@ -247,6 +265,16 @@ The first is printed as a superscript,
 the second one is printed after it,
 and the third one is printed before it.
 The second and third arguments are optional.
+.TP
+.B TC
+Begin table of contents.
+The table of contents is indicated by the string
+.B J
+("Contents" by default).
+It must be followed by the macros
+.B .IC
+and
+.BR .IS .
 .TP
 .B .TL \(dq\fItitle\fP\(dq
 Specify the document title.
@@ -396,6 +424,9 @@ is called with the argument of
 .B f
 (or with no argument), this counter is incremented.
 .TP
+.B h0
+The number of the current chapter.
+.TP
 .BR h1 " to " h5
 The number of the current sections of level 1 to 5.
 .TP
@@ -452,6 +483,12 @@ troff request.
 .PP
 Known strings are listed below.
 .TP
+.B C
+If set, is used as the default chapter prefix.
+.TP
+.B J
+Contents (used for the table of contents).
+.TP
 .B F
 Figure
 .TP
@@ -462,13 +499,17 @@ There are also some strings that are used internaly,
 and therefore should not be overwritten.
 Internal strings are listed below.
 .TP
+.B cH
+This string contains the name of the current chapter.
+It is used in the header of the page.
+.TP
 .B sH
 This string contains the name of the last numbered section heading.
-It is used in the header of the page in some formats of documents.
+It is used in the header of the page.
 .TP
 .B sN
 This string contains the number prefix of the section heading.
 .SH SEE ALSO
-.IR mb (7),
 .IR mp (7),
+.IR mt (7),
 .IR troff (1)

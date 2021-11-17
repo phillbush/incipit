@@ -180,6 +180,11 @@ A footnote must be ended with
 Begin a paragraph.
 If an argument is provided,
 it is used as the title of the paragraph and is printed in bold before the first line of the paragraph.
+The number registers
+.BR PN ,
+and
+.B PT
+change how paragraphs are printed.
 Each paragraph is printed in a different page (slide).
 .TP
 .B .QE
@@ -220,16 +225,14 @@ the second one is printed after it,
 and the third one is printed before it.
 The second and third arguments are optional.
 .TP
-.B .TL \(dq\fItitle\fP\(dq [\(dq\fIsubtitle\fP\(dq]
-Specify the document title and subtitle.
-The first argument defines the document title.
-The second argument is optional and defines the document subtitle.
-If a subtitle is supplied, it is printed in a line below the title, and the title ends in a colon.
-If no subtitle is supplied, the title does not end in a colon.
+.B .TL \(dq\fItitle\fP\(dq
+Specify the document title.
 This macro also sets the
 .B .tL
 internal string to the title.
 The title is printed centered, in bold and four points larger than the regular paragraph size.
+If more than one argument is provided (up to five),
+each argument is printed in a different line on the title page.
 .PP
 There are also some macros that are used internaly,
 and therefore should not be overwritten.
@@ -308,8 +311,16 @@ Page height (default: 29.7cm).
 .B PI
 Paragraph indent.
 .TP
+.B PN
+If set to non-zero, paragraphs are numbered.
+.TP
 .B PS
 Point size (default 10 points).
+.TP
+.B PT
+If set to a given value and unit,
+if a paragraph has a title,
+the content of the paragraph is indented to the right of the title by this given amount of units.
 .TP
 .B SS
 Section style:
@@ -355,9 +366,6 @@ is called with the argument of
 .B f
 (or with no argument), this counter is incremented.
 .TP
-.B fT
-Number of the previous font.
-.TP
 .BR h1 " to " h5
 The number of the current sections of level 1 to 5.
 .TP
@@ -380,8 +388,13 @@ is called, this counter is decremented.
 Set to 0 on title page, set to 1 otherwise.
 This number register is used to avoid printing header titles and footer titles on the page.
 .TP
-.BR .nI ", " .nX C, " .nP ", " .n? ", " .iS ", " .vS
+.BR nI ", " nC ", " nJ ", " nP ", " n? ", " iS ", " vS
 Those numer registers are used internally to implement footnotes.
+.TP
+.B pC
+Paragraph counter (used when the
+.B PN
+number register is set to non-zero).
 .TP
 .B sI
 Set to 1 when a section is processed;
@@ -427,5 +440,5 @@ It is used in the header of the page in some formats of documents.
 This string contains the number prefix of the section heading.
 .SH SEE ALSO
 .IR mb (7),
-.IR mp (7),
+.IR mt (7),
 .IR troff (1)

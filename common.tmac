@@ -5,8 +5,10 @@
 .ll \\n(LLu
 .lt \\n(LLu
 .wh 0 tM
+.wh 12i bM
+.wh -\\n(MBu nX
+.ch bM -\\n(MBu
 .wh -\\n(MBu/2u bT
-.wh -\\n(MBu bM
 .tM
 .nr iN 0
 .nr bG 1
@@ -14,6 +16,7 @@
 ..
 .       \" begin of body
 .de bY
+.fi
 .if !\\n(bG .bG
 .sp 2
 .ns
@@ -21,7 +24,7 @@
 ..
 .       \" top margin
 .de tM
-'sp \\n(MTu/2u
+'sp \\n(MTu/3u
 .ev 2
 .lt \\n(LLu
 .ft R
@@ -33,7 +36,6 @@
 'ns
 .nr fI 0
 .nr sI 0
-.nr mT 1
 .nr nI 0 1
 .nr nP 0-\\n(MB
 .ch bM -\\n(MBu
@@ -47,14 +49,16 @@
 .       nf
 .       nN
 .       rm nN
-.       if "\\n(.z"nY"a .di
-.       nr nN 0
+.       if \\n(.znY .di
+.       nr nI 0
 .       ev
 .\}
 'bp
 ..
 .       \" reset
 .de rT
+.ll \\n(LLu
+.nr mT 1
 .if !\\n(bY .bY
 .br
 .ce 0
@@ -71,31 +75,6 @@
 .\}
 .if n .ta 8n 16n 24n 32n 40n 48n 56n 64n 72n 80n
 .if t .ta 5n 10n 15n 20n 25n 30n 35n 40n 45n 50n 55n 60n 65n 70n 75n
-..
-.       \" title
-.de TL
-.rm sH
-.nr bY 0
-.ds tL \\$1
-.nr mT 0
-.if !\\n(bG .bG
-.ce 999
-.ft B
-.ps \\n(PS+4
-.vs \\n(VS+4p
-.ne 4
-.hy 0
-.nf
-.ie !"\\$2"" \{\
-\XPDFMark: Title \\$1: \\$2
-\\$1:
-.br
-\\$2
-.\}
-.el \{\
-\XPDFMark: Title \\$1
-\\$1
-.\}
 ..
 .       \" author
 .de AU
@@ -120,28 +99,118 @@
 .el            .sp \\n(PDu
 .ne 1+\\n(.Vu
 .ft R
-.ie !\\n(n? \{\
-.       ie \\n(SP=1                 .ti \\n(.iu+\\n(PIu
-.       el .if \\n(SP=2 .if !\\n(fI .ti \\n(.iu+\\n(PIu
-.       if !"\\$1"" \fB\\$1\fP
+.if !\\n(n? \{\
+.       ie \\n(PT \{\
+.               in \\n(i\\n(iNu+\\n(PTu
+.               ti \\n(i\\n(iNu
+.               ta \\n(PTu
 .\}
-.el \{\
-.       if !"\\$1"" \fB\\$1\fP
+.       el .ie \\n(SP=1                 .ti \\n(.iu+\\n(PIu
+.       el .if \\n(SP=2 .if !\\n(fI .ti \\n(.iu+\\n(PIu
+.       if \\n(PN \fB\\n+(pC\&.\fP
 .\}
 .nr fI 0
 .nr sI 0
+.if !"\\$1"" .if !\\n(PT \fB\\$1\fP
+.if !"\\$1"" .if \\n(PT  \fB\\$1\fP\t\c
+..
+.       \" title
+.de TL
+.rm sH
+.nr mT 0
+.if !\\n(bG .bG
+.ce 999
+.ft B
+.ps \\n(PS+24
+.vs \\n(VS+24p
+.ne 4
+.hy 0
+.nf
+.ds tL \\$1
+\\$1
+.if !"\\$2"" \{\
+.ds tL "\\*(tL \\$2"
+.br
+\\$2
+.\}
+.if !"\\$3"" \{\
+.ds tL "\\*(tL \\$3"
+.br
+\\$3
+.\}
+.if !"\\$4"" \{\
+.ds tL "\\*(tL \\$4"
+.br
+\\$4
+.\}
+.if !"\\$5"" \{\
+.ds tL "\\*(tL \\$5"
+.br
+\\$5
+.\}
+.\XPDFMark: Title \\*(tL
+..
+.       \" chapter
+.de CH
+.rT
+.ce 0
+.rm sH
+.nr mT 0
+.if \\n%>1       .bp
+.if \\n%>1 .if e .bp
+.ie \\*(cH .nr % 1
+.nr pC 0 1
+.nr nC 0 1
+.nr bY 0
+.nr h0 +1
+.nr h1 0
+.nr h2 0
+.nr h3 0
+.nr h4 0
+.nr h5 0
+.if !\\n(bG .bG
+.fi
+.ad r
+.ft B
+.ps \\n(PS+30
+.vs \\n(VS+30p
+.ne 4
+.hy 0
+.ie !\\$2 \{\
+.       ie \\$1 .ds cH \\$2
+.       el            .ds cH \\$2. \\$1
+\XPDFMark: Bookmark 0 \\*(cH\\$2
+.       if !\\$1 \{
+.br
+\\$1
+.       \}
+.\}
+.el .ie !\\*C \{\
+.       ds cH \\*C \\n(h0. \\$1
+\XPDFMark: Bookmark 0 \\*(cH\\*C \\n(h0
+.br
+\\$1
+.\}
+.el \{\
+.       ds cH \\n(h0. \\$1
+\XPDFMark: Bookmark 0 \\*(cH\\n(h0
+.br
+\\$1
+.\}
+.tm index:.IC "\\n%" "\\n(h0" "\\$1"
 ..
 .       \" SH - section heading
 .de SH
 .pB
 .rT
 .ds sH \\$2
-.ti \\n(.iu
-.ne 5.1
+.in \\n(.iu
+.ne 8.1
 .sp 1
 .ft B
 .sS
 .nr h\\$1 +1
+.in \\n(i\\n(iNu
 .if !\\$1-4 .nr h5 0
 .if !\\$1-3 .nr h4 0
 .if !\\$1-2 .nr h3 0
@@ -162,11 +231,16 @@
 .if \\n(SS>4 .if \\$1-4 .as sN \\n(h5.
 .ie \\n(h0      .nr sL \\$1
 .el             .nr sL \\$1-1
-\XPDFMark: Bookmark \\n(sL \\*(sN \\$2
-.if \\n(SS \\*(sN
+.ie \\n(SS \{\
+\XPDFMark: Bookmark \\n(sL \\*(sN \\$2\\*(sN
 \\$2
+.\}
+.el \{\
+\XPDFMark: Bookmark \\n(sL \\*(sN \\$2\\$2
+.\}
 .nr sI 1
 .nr fI 0
+.tm index:.IS "\\n%" "\\*(sN" "\\$2"
 ..
 .       \" figure start
 .de FS
@@ -182,7 +256,8 @@
 .nf
 .ne \\n(dnu
 .ie \\n(sI     .sp 1
-.el .sp \\n(FDu
+.el            .sp \\n(FDu
+.ns
 .fG
 .nr fI 1
 .nr sI 0
@@ -247,15 +322,6 @@
 ..
 .       \" quote start
 .de QS
-.mk
-.br
-.ps \\n(PS+6
-.ft B
-“
-.ps
-.ft
-.br
-.rt
 .nr iN +1
 .nr i\\n(iN \\n(.i
 .in +\\n(PIu
@@ -303,7 +369,7 @@
 .br
 .nr l\\n(lN +1
 .ie "\\*(l\\n(lN"b" \{\
-.ti -3n
+.ti -2n
 .ta 2n
 \fB\(bu\t\fP\c
 .\}
@@ -348,42 +414,41 @@
 ..
 .       \" footnote start
 .de NS
-\s-2\v'-3p'\\n+(nC\v'3p'\s0
-'ce 0
-.di
-.ev 1
+.if !\\n(nJ \s-2\v'-3p'\\n+(nC\v'3p'\s0\\$1
 .da nN
+.ev 1
 .br
+.ll \\n(LLu
 .if \\n(n? \{\
 .       tm nested footnote
 .       ab
 .\}
 .nr n? 1
-.if !\\n+(nI-1 \{
+.if \\n+(nI=1 \{
 .       in 0
 .       if n _________________________
-.       if t \l'\\n(.lu'
+.       if t \l'\\n(LLu'
 .       br
 .\}
 .fi
 .nr iS \\n(iN
 .nr iN 0
-.SP \\n(nC
+.if !\\n(nJ .SP \\n(nC
 ..
 .       \" footnote end
 .de NE
 .br
 .nr vS \\n(.v
 .ev
+.di
 .nr n? 0
-'di
-'nr nP -\\n(dn
-'if \\n(nI=1 .nr nP-(\\n(.v-\\n(vS)
-'ch bM \\n(nPu
-'if (\\n(nl+1v)>(\\n(.p+\\n(nP) \{\
-'       ch fo \\n(nlu+1v
-'\}
-'nr iN \\n(iS
+.nr nP -\\n(dn
+.if \\n(nI=1 .nr nP -(\\n(.v-\\n(vS)
+.ch bM \\n(nPu
+.if (\\n(nl+1v)>(\\n(.p+\\n(nP) \{\
+.       ch bM \\n(nlu+1v
+.\}
+.nr iN \\n(iS
 ..
 .       \" process footnote overflow
 .de nX
@@ -391,21 +456,27 @@
 ..
 .       \" get leftover footnote
 .de nZ
-.fn
+.nr nJ 1
+.NS
 .nf
 .nY
-.ef
+.NE
+.nr nJ 0
 ..
 .nr nC 0 1
+.nr pC 0 1
 .nr fN 0
 .nr tN 0
 .nr FL 5.5i
 .nr PD .3v
-.nr SP 2
+.nr SP 1
 .nr SS 3
+.nr PN 0
+.nr PT 0
 .if n .nr PD 1v
 .if t .nr PD .3v
 .if n .nr FD 1v
 .if t .nr FD 1v
 .if "\*F"" .ds F Figure
 .if "\*T"" .ds T Table
+.if "\*J"" .ds J Contents
