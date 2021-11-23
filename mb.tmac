@@ -30,72 +30,10 @@
 .ps \\n(PS+2
 .vs \\n(VS+2p
 ..
-.       \" table of contents
-.de TC
-.bp
-.ce 0
-.fi
-.ad r
-.ft B
-.ps \\n(PS+30
-.vs \\n(VS+30p
-\\*J
-.ps \\n(PS
-.vs \\n(VSp
-.sp 4
-.ns
-.rT
-.ad l
-..
-.       \" index chapter
-.de IC
-.ne 8
-.ta 0
-.sp 1v
-.ad l
-.ft B
-.in 0
-.mk
-\\$2
-.br
-.rt
-.in 3n
-.ll \\n(LLu-5n
-\\$3
-.mk
-.br
-.rt
-.in 0
-.ll \\n(LLu
-.ad r
-\\$1
-.ft P
-.br
-.sp .3v
-.ns
-..
-.       \" index section
-.de IS
-.sp .1v
-.ad l
-.ft R
-.in 3n
-.mk
-\\$2
-.br
-.rt
-.in 8n
-.ll \\n(LLu-5n
-\\$3
-.mk
-.br
-.rt
-.in 0
-.ll \\n(LLu
-.ad r
-\\$1
-.ft P
-.br
+.       \" setup title
+.de sT
+.ps \\n(PS+24
+.vs \\n(VS+24p
 ..
 .       \" initialization
 .nr PI 5n

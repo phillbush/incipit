@@ -8,9 +8,8 @@ text itself to format documents.
 
 In the ‘Incipit Markup Language’, a paragraph is a block of text
 delimited by blank lines.  A paragraph may be preceded by a section
-header and succeded by a figure.  Enumerations (also knonw as “lists”)
-are special types of paragraphs (although some people interpret an
-enumeration as the continuation of the paragraph before it).
+header and succeded by a figure.  Enumerations (also known as “lists”)
+are a set of items that extend the paragraph before.
 
 In this document, the word “period” refers sentences delimited by a
 period.  And the word “colon” refers to a segment of text delimited
@@ -24,19 +23,15 @@ the section character (⟨§⟩, U+00A7) is used to markup section headers.
 The bullet character (⟨•⟩, U+2022) is used to markup bulleted lists.
 
 .Inline punctuation.
-Punctuations are mostly used within a paragraph.  Those punctuations
-(called inline punctuation) markup emphases, references, topics or
-preformated text.  Punctuations cannot be nested: a portion of text
-is either emphasized, or it is preformated, never both.  The types of
+Punctuations are mostly used within paragraphs and enumerations.  Those
+punctuations (called inline punctuation) markup references, topics or
+preformated text.  Punctuations cannot be nested: a portion of text is
+either topicalized, or it is preformated, never both.  The types of
 inline punctuations are enumerated below.
-• Emphasis: Text ‘between single quotes’ is emphasized.  The single
-            quotes must be Unicode characters ⟨‘⟩ (U+2018) and ⟨’⟩
-            (U+2019).  Emphatic text is formated in italic font and
-            the punctuation is removed in the final document.
-• Topic: Text “between double quotes” is topicalized.  The double quotes
-         must be Unicode characters ⟨“⟩ (U+201C) and ⟨”⟩ (U+201D).
-         Topical text is formated in italic font and the punctuation is
-         preserved in the final document.
+• Topic: Text ‘between single quotes’ is topicalized.  The single
+         quotes must be Unicode characters ⟨‘⟩ (U+2018) and ⟨’⟩
+         (U+2019).  Topic text is formated in italic font and the
+         punctuation is removed in the final document.
 • Reference: Text «between double angle quotes» is reference.  The angle
              quotes must be Unicode characters ⟨«⟩ (U+00AB) and ⟨»⟩
              (U+00BB).  References are not supported yet.
@@ -45,31 +40,27 @@ inline punctuations are enumerated below.
                punctuation.  Preformated text is formated in monospaced
                font and the punctuation is removed in the final
                document.
-• Meta text: Text ⟨between angle braces⟩ is meta text.  It is formated
-             in monospaced font and the punctuation is kept in the final
-             document.
 
 .Typing punctuation.
 If you use Unix, you can either configure your keybindings or configure
 the Compose key to insert punctuation and other characters not found on
 a regular keyboard.
 
-
 §§ Sections
 
 Paragraphs can be grouped in sections, which can be nested.  A section
 is a line whose first characters are section punctuations (`§`, U+00A7).
-A section can be marked by a one or more section punctuations.  The
-number of time that punctuation occurs represents the level of the
-section.  For example, a first-level section begins with `§`; a
-second-level section begins with `§§`, and so on.
+A section can be marked by one or more section punctuations.  How many
+times that punctuation occurs represents the level of the section.  For
+example, a first-level section begins with `§`; a second-level section
+begins with `§§`, and so on.
 
 
 §§ Enumerations
 
 An enumeration, also known as list, is a hierarchical grouping of
 periods, called the enumeration items.  Each item begins with zero
-or more tab characters followed the enumeration punctuation (`•`,
+or more tab characters followed by the enumeration punctuation (`•`,
 U+2022), also knon as ‘bullet’.  The number of tabs in the beginning
 of an item identifies the item level: zero tab for first-level items;
 one tab for second-level items; and so on.
@@ -101,21 +92,18 @@ The following is an example of enumeration.
 • (E) Fifth item.
 
 
-§ Footnotes
+§§ Footnotes
 
 A footnote is a text placed at the bottom of a page in an incipit
-document.  There are two ways to include a footnote: inline footnotes
-and post-paragraph footnotes.
+document.
 
-.Inline footnotes.
-Inline footnotes are written between square brackets after an asterisk.
-There should be no space around the asterisk (neither before it or
-between the asterisk and the open square bracket).*[I am a footnote]
-The previous sentence contains a footnote.  Inline footnotes should be a
-few sentences long and should not contain paragraph breaks.
+.Simple footnote.
+A simple footnote is marked by an asterisk between square brackets
+in a paragraph or enumeration.[*]  The content of the footnote must
+immediately follow the paragraph and must be preceded by the same
+mark (an asterisk between square brackets) followed by a colon.
 
-.Post-paragraph footnotes.
-TODO.
+[*]: This is an example of footnote.
 
 
 § Incipit
@@ -125,14 +113,14 @@ incipit of a text is the first few words of the text.  In the ‘Incipit
 Markup Language’, incipits are initial elements of the text used to
 format the text itself.  The incipit of a document is its first
 paragraph (which contains the title and some meta information); the
-incipit of a paragraph is its first period (aka sentence); the incipit
-of a period is its first colon (the part separated by colon).
+incipit of a paragraph is its first period (its first sentence); the
+incipit of a period is its first colon (the part separated by colon).
 
 In the ‘Incipit’ Markup Language, a text unit can have no incipit.
 A document without incipit is a document without title.
-A paragraph without incipit is a paragraph without its special first period.
-This implies that certain units of text are made up of two parts:
-an optional incipit and a body.
+A paragraph without incipit is a paragraph without its special first
+period.  This implies that certain units of text are made up of two
+parts: an optional incipit and a body.
 
 .The incipit of a document.
 The first paragraph of a document is its incipit.  If the document
@@ -143,17 +131,14 @@ this colon is the main title and the rest is the subtitle.  For example,
 this document has an incipit paragraph, which has an incipit period (the
 full title), which has an incipit colon (the main title).  The remaining
 periods are interpreted depending on the output format.  In troff, the
-second period is the author, the third period is the institution, and
-the following periods are the abstract of the document.
+following periods are the authors and their institution.
 
 .The incipit of a paragraph.
 If the first period of a paragraph begins with a period punctuation,
 this paragraph contains a incipit period.  This incipit period, called
 the title of the paragraph, is formated in bold font.  In the source
 plain text of this document, the incipit of a paragraph is written alone
-in aline above the rest of the paragraph; but this is not necessary, the
-incipit period can be written in the same line of the rest of the
-paragraph.
+in a line above the rest of the paragraph.
 
 .The incipit of a period.
 In an enumeration, the first colon of the first period of a enumerated
@@ -174,9 +159,9 @@ followed by a colon indicates the type of the figure.  The content
 between the tag and the open curly bracket is the caption
 
 .Code Listings.
-The simplest figure is a code listing, an example of which,
-copied from the second edition of “The C Programming Language” book, is
-presented below.
+The simplest form of figure is a code listing, an example of which,
+copied from the second edition of “The C Programming Language” book,
+is presented below.
 
 CODE: Hello World. {
 	#include <stdio.h>
@@ -191,8 +176,7 @@ CODE: Hello World. {
 When converting to troff, diagrams can be written in the PIC language.
 Diagrams are marked with the ⟨PIC:⟩ keyword before the opening curly
 bracket.  The only punctuation that are processed inside a PIC figure
-are emphasis and topic (topic is converted to a emphasis between ASCII
-double quotes).
+are topics.
 
 PIC: Compilation process. {
 	SRC1: box width 1 “gram.c”
@@ -275,9 +259,9 @@ Country table from The AWK Book.
 
 .Tables (row span).
 If a cell in a table contains only two apostrophes (⟨''⟩, called
-“ditto”), this cell contains the same content of the the cell above it,
-and both cells are merged into a single cell.  We call this phenomenon a
-“row span”.  Row spans are only supported when converting to troff.
+‘ditto’), this cell contains the same content of the the cell above it,
+and both cells are merged into a single one.  We call this phenomenon a
+‘row span’.  Row spans are only supported when converting to troff.
 Column span is not supported at all.  The following is an example of a
 table with row span.
 
@@ -347,8 +331,8 @@ written between double quotes.
 
 § Conventions
 
-Texts written in the Incipit markup languages use some unnusual
-conventions that are described in this section.
+Texts written in the Incipit markup languages use some unusual
+conventions that are described below.
 
 .Apostrophe for abbreviations.
 In usual non-Incipit text, a full stop can be used both to mark the end
@@ -363,11 +347,16 @@ for syntactic purposes (for example, bold text is used for the title of
 a paragraph, and italic is used for topics and quotations).  In Incipit,
 text with emphasis should be written in all caps.
 
+.Parentheses for parenthesis.
+While some texts use em-dashes to mark parenthetical text, in Incipit,
+only parentheses are used for that.
+
+
 § Conversion
 
 The `i2roff(1)` and `i2html` awk scripts convert a text written in
-Incipit to pdf (using the `mt(7)` or `mp(7)` troff macro packages),
-or to HTML formats.
+Incipit to pdf (using the `mt(7)`, `mb(7)`, or `mp(7)` troff macro
+packages), or to HTML formats.
 
 Converting an Incipit text to HTML is simple, just use the `i2html(1)`
 script to read the text file, and the converted document is printed to
@@ -378,7 +367,7 @@ standard output.
 }
 
 Converting an Incipit text to PDF is more complex.  First, the text must
-be converted to `mt(7)` or `mp(7)`, which are `troff(1)` macro
+be converted to `mt(7)`, `mb(7)`, or `mp(7)`, which are `troff(1)` macro
 packages.
 
 {
@@ -389,27 +378,22 @@ Then, we need to convert the `.roff` file to a `.ps` (postscript) file,
 this is done with a series of commands in a pipeline.  Those commands
 depend on the troff system and vary between Groff, Heirloom Doctools,
 etc.  We need to chose one of the macro packages: `mt(7)` if we are
-formatting a A4 paper, or `mp(7)` if we are formatting a slide
-presentation in landscape letter paper.  Using Heirloom Doctools, the
-command is the following to generate a portrait document (to generate a
-landscape document, used for slides, replace `portrait` with `landscape`
-in the command below).
+formatting a A4 paper; `mb(7)` if we are formatting a book; or `mp(7)`
+if we are formatting a slide presentation;.  Using Heirloom Doctools,
+the command is the following to generate a `mt(7)` document.
 
 {
-	<file.roff pic |\
-	tbl |\
-	troff -mt -mpictures |\
-	dpost -pportrait >file.ps
+	<file.roff pic | tbl | troff -mt -mpictures | dpost >file.ps
 }
 
-Then, we need to convert the `.ps` file to a `.pdf` file.  This is done
-with the `ps2pdf(1)` command.  This command accepts as argument the
-papersize, which can be `a4`, `letter`, `halfletter`, etc.
+Then, we need to convert the `.ps` file into a `.pdf` file.  This is
+done with the `ps2pdf(1)` command.  This command accepts as argument
+the papersize, which can be `a4`, `letter`, `isob5`, etc.
 
 {
 	ps2pdf "-sPAPERSIZE=a4" file.ps file.pdf
 }
 
 A Makefile automatizing the conversion process is distributed with
-Incipit.  For more information on the `mt(7)` and `mp(7)` macro
-packages, manuals for them are distributed as well.
+Incipit.  For more information on the `mt(7)`, `mb(7)` and `mp(7)`
+macro packages, manuals for them are distributed as well.

@@ -15,24 +15,10 @@
 .ps \\n(PS+2
 .vs \\n(VS+2p
 ..
-.       \" abstract begin
-.de AB
-.pB
-.rT
-.sp 2
-.if !"\\$1"" \{\
-.ce 1
-\fB\\$1\fP
-.\}
-.fi
-.ll \\n(LLu-10n
-.in 10n
-..
-.       \" abstract end
-.de AE
-.ll \\n(LLu
-.in 0
-.nr bY 0
+.       \" setup title
+.de sT
+.ps \\n(PS+6
+.vs \\n(VS+6p
 ..
 .       \" initialization
 .nr PI 5n
