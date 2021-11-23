@@ -61,9 +61,9 @@ tmac.p: common.tmac mp.tmac
 install: all
 	install -D -m 755 i2roff ${DESTDIR}${PREFIX}/bin/i2roff
 	install -D -m 755 i2html ${DESTDIR}${PREFIX}/bin/i2html
-	install -D -m 644 mi.7 ${DESTDIR}${MANPREFIX}/man7/mb.7
-	install -D -m 644 mi.7 ${DESTDIR}${MANPREFIX}/man7/mp.7
-	install -D -m 644 mi.7 ${DESTDIR}${MANPREFIX}/man7/mt.7
+	install -D -m 644 man.7 ${DESTDIR}${MANPREFIX}/man7/mb.7
+	install -D -m 644 man.7 ${DESTDIR}${MANPREFIX}/man7/mp.7
+	install -D -m 644 man.7 ${DESTDIR}${MANPREFIX}/man7/mt.7
 	install -D -m 644 tmac.b ${DESTDIR}${TMACPREFIX}/tmac.b
 	install -D -m 644 tmac.p ${DESTDIR}${TMACPREFIX}/tmac.p
 	install -D -m 644 tmac.t ${DESTDIR}${TMACPREFIX}/tmac.t
