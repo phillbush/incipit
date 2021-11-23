@@ -245,7 +245,6 @@ function escape(s) {
 		gsub(/\\/, "\\e", s)
 		gsub(/"/, "\\(dq", s)
 		gsub(/'/, "\\(aq", s)
-		gsub(/`/, "\\(ga", s)
 		gsub(/-/, "\\(hy", s)
 		gsub(/\./, "\\\\\\&&", s)
 	} else if (html) {
@@ -258,7 +257,7 @@ function escape(s) {
 }
 
 # do inline punctuation expansion
-function punctuate(after,    before, punct, puncttype, matched) {
+function punctuate(after,    before, punct, puncttype, matched, len) {
 	after = escape(after)
 	before = ""
 	punct = ""
@@ -270,6 +269,13 @@ function punctuate(after,    before, punct, puncttype, matched) {
 			before = before substr(after, 1, RSTART - 1)
 			punct = substr(after, RSTART, RLENGTH)
 			after = substr(after, RSTART + RLENGTH)
+			len = length(punct)
+			if (puncttype == "" && substr(after, 1, len) == punct) {
+				before = before punct
+				punct = ""
+				after = substr(after, len + 1)
+				continue
+			}
 		} else {
 			before = before after
 			punct = ""
@@ -310,17 +316,6 @@ function punctuate(after,    before, punct, puncttype, matched) {
 			after = ""
 		}
 	}
-	if (puncttype) {
-		if (puncttype == "{") {
-			after = after markup[type, "PRE", "END"]
-		} else if (puncttype == "`") {
-			after = after markup[type, "PRE", "END"]
-		} else if (puncttype == "‘") {
-			after = after markup[type, "EMPHASIS", "END"]
-		} else if (puncttype == "“") {
-			after = after "”"
-		}
-	}
 	return before after
 }
 
@@ -341,7 +336,7 @@ function docincipit(    n) {
 					sub(/^ +/, "", tok)
 					printf markup[type, (n ? "AUTHOR2" : "SUBTITLE"), "BEG"]
 					sub(/.$/, "", tok)
-					printf "%s", punctuate(tok)
+					printf "%s", escape(tok)
 					printf markup[type, (n ? "AUTHOR2" : "SUBTITLE"), "END"]
 				} else {
 					ungettok()
@@ -376,13 +371,12 @@ function prose(    para, period, notes, enums, label, colon, lvl, s, n, m, i, j,
 			para = para tok "\n"
 			gettok()
 		}
-		para = punctuate(para)
 		ungettok()
 		para = sprintf("%s%s%s%s%s",              \
 			markup[type, "PARAGRAPH", "BEG"], \
 			period,                           \
 			markup[type, "PARAGRAPH", "MID"], \
-			para,                             \
+			punctuate(para),                  \
 			markup[type, "PARAGRAPH", "END"])
 		while (gettok() > 0 && toktype == BLANK) {
 			;
@@ -419,12 +413,11 @@ function prose(    para, period, notes, enums, label, colon, lvl, s, n, m, i, j,
 				punctuate(colon),             \
 				markup[type, "COLON", "END"])
 		}
-		enums[n] = punctuate(enums[n])
 		enums[n] = sprintf("%s%s%s%s%s",     \
 			markup[type, "ITEM", "BEG"], \
 			colon,                       \
 			markup[type, "ITEM", "MID"], \
-			enums[n],                    \
+			punctuate(enums[n]),         \
 			markup[type, "ITEM", "END"])
 		ungettok()
 		while (gettok() > 0 && toktype == BLANK) {
@@ -511,7 +504,7 @@ function section(    lvl) {
 	if (gettok() <= 0)
 		return
 	printf markup[type, "SECTION", "BEG"], lvl, genid(tok)
-	printf "%s", punctuate(tok)
+	printf "%s", escape(tok)
 	printf markup[type, "SECTION", "END"], lvl
 }
 
@@ -537,9 +530,9 @@ function figure(    figtype, i) {
 	while ((ret = fgetline()) == 1) {
 		for (i = 0; i < quotelvl; i++)
 			sub(/^\t/, "")
-		sub(/^[ \t]/, "")
 		if ($0 == "}")
 			break
+		sub(/^[ \t]/, "")
 		if (figtype == "IMAGE") {
 			sub(/^[ \t]+/, "")
 			sub(/[ \t]+$/, "")

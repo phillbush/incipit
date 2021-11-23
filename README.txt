@@ -92,13 +92,10 @@ The following is an example of enumeration.
 • (E) Fifth item.
 
 
-§§ Footnotes
+§ Footnotes
 
 A footnote is a text placed at the bottom of a page in an incipit
-document.
-
-.Simple footnote.
-A simple footnote is marked by an asterisk between square brackets
+document.  Footnotes are marked by an asterisk between square brackets
 in a paragraph or enumeration.[*]  The content of the footnote must
 immediately follow the paragraph and must be preceded by the same
 mark (an asterisk between square brackets) followed by a colon.
@@ -178,36 +175,14 @@ Diagrams are marked with the ⟨PIC:⟩ keyword before the opening curly
 bracket.  The only punctuation that are processed inside a PIC figure
 are topics.
 
-PIC: Compilation process. {
-	SRC1: box width 1 “gram.c”
-	move right
-	SRC2: box width 1 “main.c”
-	move right
-	SRC3: box width 1 “lex.c”
-
-	move up from top of SRC1
-	YACC: ellipse "yacc"
-	move up
-	GRAM: box width 1 “gram.y”
-
-	move up from top of SRC3
-	LEX: ellipse "lex"
-	move up
-	L: box width 1 “lex.y”
-
-	move down from bottom of SRC2
-	CC: ellipse "cc"
-	move down
-	ELF: box width 1 “a.out”
-
-	arrow from bottom of GRAM to top of YACC
-	arrow from bottom of YACC to top of SRC1
-	arrow from bottom of L to top of LEX
-	arrow from bottom of LEX to top of SRC3
-	arrow from bottom of SRC1 to upper left of CC
-	arrow from bottom of SRC2 to top of CC
-	arrow from bottom of SRC3 to upper right of CC
-	arrow from bottom of CC to top of ELF
+PIC: Troff compilation process. {
+	box “file.roff”
+	arrow
+	ellipse “troff”
+	arrow
+	ellipse “dpost”
+	arrow
+	box “file.ps”
 }
 
 .Images.
