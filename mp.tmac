@@ -1,6 +1,16 @@
 .\" mp: macros for slide presentation
 .       \" top margin
-.de tT
+.de bT
+.ev 2
+.lt \\n(LLu
+.ft R
+.ps \\n(PS-6
+.vs \\n(VS-6p
+.if \\n%>1 \{\
+.       ie !\\*(sH .tl \\*(tL/\\*(sH%
+.       el               .tl \\*(tL%
+.\}
+.ev
 ..
 .       \" paragraph break
 .de pB
